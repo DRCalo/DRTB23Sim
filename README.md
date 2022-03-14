@@ -36,7 +36,7 @@
 <!--Project desription-->
 ## Project description
 The project targets a standalone Geant4 simulation of the Dual-Readout electromagnetic-sized 2020 tubes prototype beam tests. We plan to perform Geant4 regression testing, physics lists comparison and validation against test-beam data. 
-- Start date: 7 July 2021 
+- Start date: 7 July 2021.
 
 <!--Authors and contacts-->
 ## Authors and contacts
