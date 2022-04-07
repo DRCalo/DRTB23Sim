@@ -35,6 +35,8 @@ DREMTubesEventAction::DREMTubesEventAction()
     NofScinDet(0),
     EnergyTot(0.),
     PrimaryPDGID(0),
+    PrimaryX(0),
+    PrimaryY(0),
     PrimaryParticleEnergy(0.),
     EscapedEnergy(0.),
     PSEnergy(0.),
@@ -61,6 +63,8 @@ void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {
     NofScinDet = 0;
     EnergyTot = 0.;
     PrimaryPDGID = 0;
+    PrimaryX = 0;
+    PrimaryY = 0;
     PrimaryParticleEnergy = 0.;
     EscapedEnergy = 0.;
     PSEnergy = 0.;
@@ -102,6 +106,8 @@ void DREMTubesEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleIColumn(6, PrimaryPDGID);
     analysisManager->FillNtupleDColumn(7, EscapedEnergy);
     analysisManager->FillNtupleDColumn(8, PSEnergy);
+    analysisManager->FillNtupleDColumn(9, PrimaryX);
+    analysisManager->FillNtupleDColumn(10,PrimaryY);
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled
 

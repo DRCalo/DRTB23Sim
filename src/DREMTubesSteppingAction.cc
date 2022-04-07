@@ -92,7 +92,7 @@ void DREMTubesSteppingAction::AuxSteppingAction( const G4Step* step ) {
 	 volume->GetName() == "Clad_C_fiber" ||
 	 volume->GetName() == "Core_C_fiber" ||
          volume->GetName() == "Abs_Cher_fiber"  ) {
-        fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1)),
+        fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3)),
 				  edep );
     }
     	
@@ -111,6 +111,9 @@ void DREMTubesSteppingAction::AuxSteppingAction( const G4Step* step ) {
         //
         fEventAction->SavePrimaryPDGID(step->GetTrack()->GetDefinition()->GetPDGEncoding());
         fEventAction->SavePrimaryEnergy(step->GetTrack()->GetVertexKineticEnergy());
+        fEventAction->SavePrimaryXY(step->GetTrack()->GetPosition().x(),
+                                    step->GetTrack()->GetPosition().y());
+
     }
 }
 /*
@@ -236,8 +239,11 @@ void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) {
 	}
 
 	if ( step->GetTrack()->GetDefinition()->GetPDGCharge() == 0 || step->GetStepLength() == 0. ) { return; } //not ionizing particle
-				 
-	TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));
+//    G4VPhysicalVolume* modvolume 
+//        = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume(3);
+//	 std::cout << " grandmother name " << modvolume->GetName() << " number " << modvolume->GetCopyNo() << std::endl;
+//        std::cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << std::endl;			 
+	TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));
 	fEventAction->AddScin(edep);
 	signalhit = fSignalHelper->SmearSSignal( fSignalHelper->ApplyBirks( edep, steplength ) );
 	if ( TowerID != 0 ) { fEventAction->AddVecSPMT( TowerID, signalhit ); }
@@ -272,7 +278,7 @@ void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) {
 								
 	        case TotalInternalReflection: {
 		    G4int c_signal = fSignalHelper->SmearCSignal( );								
-		    TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));		
+		    TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));		
 		    if ( TowerID != 0 ) { fEventAction->AddVecCPMT( TowerID, c_signal ); }
 		    else { 
 		        SiPMID = fDetConstruction->GetSiPMID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));

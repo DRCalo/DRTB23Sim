@@ -38,6 +38,15 @@
 #include "G4LogicalBorderSurface.hh"
 #include "G4Sphere.hh"
 #include "G4Colour.hh"
+#include "G4TwoVector.hh"
+
+//
+//  sqrt3 constants used in code
+//  reciprocal of sqrt3 given as number that divided 
+//  by sqrt 3 gives 3 
+//
+const G4double sq3=1.733;
+const G4double sq3m1=sq3/3.;
 
 //Constructor
 //
@@ -318,13 +327,18 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     //
     // Each tower/module has 16*20 fibers 
     // 16*10 Scin and 16*10 Cher
-    G4int Nofmodules = 1; 
-    G4int NofFibersrow = 3*16;
-    G4int NofFiberscolumn = 60;
+    G4int Nofmodules = 3; 
+    G4int NofFibersrow = 16;
+    G4int NofFiberscolumn = 20;
     G4double moduleZ = (1000.)*mm;
     double tolerance = 0.0*mm;
-    G4double moduleX = 3.*32.*mm+1.*mm+2.*tolerance*NofFibersrow; 
-    G4double moduleY = 59.*(1.733+2*tolerance)*mm+2.0*mm;
+    G4double tuberadius = 1.0*mm;
+//  tubes are packed in Y, so Y distance between two tubes is sqrt(3)/2*2.*tuberadius
+    G4double dtubeY=sq3*tuberadius;
+    G4double moduleX = (2*NofFibersrow+1)*tuberadius; 
+    G4double moduleY = (NofFiberscolumn-1.)*dtubeY+4.*tuberadius*sq3m1;
+//  side of hexagon in which tube is inscribed
+//    G4double side=tuberadius*2*sq3m1;
 
     // Geometry parameters of the world, world is a G4Box
     //
@@ -350,7 +364,6 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     
     // Geometry parameters of the tube
     //
-    G4double tuberadius = 1.0*mm;
     //G4double tubeZ = fiberZ;
 
     // Geometry parameters of the SiPM
@@ -358,6 +371,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4double SiPMX = 1.*mm;
     G4double SiPMY = SiPMX;
     G4double SiPMZ = 0.36*mm;
+    G4double SiPMZh = SiPMZ/2.;
 
     // Geometry parameters of the SiPM, active silicon layer
     //
@@ -400,6 +414,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     //Preshower
     //
+/*
     auto PSSolid = new G4Box("Preshower", PSX/2., PSY/2., PSZ/2.);
 
     auto PSLV = new G4LogicalVolume(PSSolid, defaultMaterial, "Preshower");
@@ -447,7 +462,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4VisAttributes* PSScinVisAtt = new G4VisAttributes( G4Colour::Cyan() );
     PSScinVisAtt->SetVisibility(true);
     PSScinLV->SetVisAttributes( PSScinVisAtt );
-    
+*/    
     //Absorber to calculate leakage
     //
     G4VSolid* leakageabsorber = new G4Sphere("leakageabsorber",                        
@@ -465,13 +480,15 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                     worldLV,               
                                     false,          
                                     0,               
-                                    fCheckOverlaps); 
-   
-    // Module equipped (with SiPM)
-    //
-    G4VSolid* moduleequippedS = new G4Box("moduleequipped",
-        moduleequippedX/2, moduleequippedY/2, moduleequippedZ/2); 
-                         
+                                    fCheckOverlaps);
+
+   // Module equipped (with SiPM)
+   //
+   // Basic module structure: extrusion of an hexcell shape
+    G4TwoVector offA(0,0), offB(0,0);
+    G4double scaleA = 1, scaleB = 1;
+    auto polygon=calcmod(tuberadius, NofFiberscolumn, NofFibersrow);
+    G4VSolid* moduleequippedS = new G4ExtrudedSolid("moduleequipped", polygon, moduleequippedZ/2, offA, scaleA, offB, scaleB);
     G4LogicalVolume* moduleequippedLV = new G4LogicalVolume(moduleequippedS,
                                                             defaultMaterial,
                                                             "moduleequipped"); 
@@ -492,16 +509,14 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     //G4VPhysicalVolume* physi_moduleequipped[Nofmodules][Nofmodules];
     for(int row=0; row<Nofmodules; row++){ 
         for(int column=0; column<Nofmodules; column++){
-
-            m_x = -(((Nofmodules-1)/2)*moduleX - moduleX*row);
-            m_y = -(((Nofmodules-1)/2)*moduleY - moduleY*column);
+            m_x = 2.*tuberadius*NofFibersrow*(Nofmodules-row-2);
+            m_y = column*NofFiberscolumn*dtubeY-NofFiberscolumn*dtubeY*(Nofmodules-1)/2;
            
             vec_m.setX(m_x);
             vec_m.setY(m_y);
             vec_m.setZ(0.);
         
             copynumbermodule = (1+row)+(column*Nofmodules);
-
             /*physi_moduleequipped[row][column] =*/ new G4PVPlacement(0,
                                                 vec_m,              
                                                 moduleequippedLV,     
@@ -515,8 +530,8 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     // Calorimeter placement (with rotation wrt beam axis)
     //
     G4RotationMatrix rotm  = G4RotationMatrix();
-    rotm.rotateY(1.0*deg);  
-    rotm.rotateX(0.0*deg);  
+    rotm.rotateY(1.5*deg);  
+    rotm.rotateX(0.35*deg);  
     G4ThreeVector position;
     position.setX(0.);
     position.setY(0.);
@@ -531,9 +546,9 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                          0,
                                                          fCheckOverlaps);
 
-    // Module
+    // Module (same shape as moduleequipped)
     //
-    G4VSolid* moduleS = new G4Box("module", moduleX/2, moduleY/2, moduleZ/2);
+    G4VSolid* moduleS = new G4ExtrudedSolid("module", polygon, moduleZ/2, offA, scaleA, offB, scaleB);
                          
     G4LogicalVolume* moduleLV = new G4LogicalVolume(moduleS,
                                                     defaultMaterial,
@@ -601,6 +616,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                          
     G4LogicalVolume* SiPMLV = new G4LogicalVolume(SiPMS, GlassMaterial,"SiPM");
 
+//    SiPMLV->SetVisAttributes(G4VisAttributes::Invisible);
     // Here I build the Si of the SiPM
     // 
     G4VSolid* SiS = new G4Box("Si", SiX/2, SiY/2, SiZ/2);
@@ -622,12 +638,12 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                 false,
                                                 0,
                                                 fCheckOverlaps);
- 
     G4VisAttributes* SiVisAtt = new G4VisAttributes(G4Colour(0.0,0.8,0.0)); //green
     SiVisAtt->SetVisibility(true);
     SiVisAtt->SetForceWireframe(true);
     SiVisAtt->SetForceSolid(true);
     SiLV->SetVisAttributes(SiVisAtt);
+//    SiLV->SetVisAttributes(G4VisAttributes::Invisible);
 
     // Logical Skin Surface placement around the silicon of the SiPM
     //
@@ -679,8 +695,8 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
             if(column%2==0){
                 S_x = +moduleX/2 - tuberadius - (tuberadius*2+2*tolerance)*row;
-                S_y = -moduleY/2 + tuberadius + (1.733+2*tolerance*mm)*(column);
-            
+                S_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance*mm)*(column)+tuberadius*(2.*sq3m1-1.);
+
                 vec_S_fiber.setX(S_x);
                 vec_S_fiber.setY(S_y);
                 vec_S_fiber.setZ(0.);
@@ -690,7 +706,6 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                 vec_SiPM.setZ(fiberZ/2+SiPMZ/2-0.18);
             
                 copynumber = ((NofFiberscolumn/2)*row+column/2);
-
                 auto logic_S_fiber = constructscinfiber(tolerance,
                                                         tuberadius,
                                                         fiberZ,
@@ -749,7 +764,6 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
             std::string SiPM_name;
             C_name = "C_row_" + C_fiber_row.str() + "_column_" + C_fiber_column.str(); 
             SiPM_name = "C_SiPM"; 
-            //SiPM_name = "SiPMC_row" + C_fiber_row.str() + "_column_" + C_fiber_column.str();
 
             G4double C_x, C_y;
             G4ThreeVector vec_C_fiber;
@@ -757,8 +771,8 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
             if(column%2 != 0){
                 C_x = moduleX/2 - tuberadius - tuberadius - (tuberadius*2+2*tolerance)*row;
-                C_y = -moduleY/2 + tuberadius + (1.733+2*tolerance*mm)*column;
-         
+                C_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance)*column+tuberadius*(2.*sq3m1-1.);
+
                 vec_C_fiber.setX(C_x);
                 vec_C_fiber.setY(C_y);
                 vec_C_fiber.setZ(0.);
@@ -832,6 +846,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolera
     G4LogicalVolume* logic_S_fiber = new G4LogicalVolume(S_fiber,
                                                          absorberMaterial,
                                                          "S_fiber");
+//    logic_S_fiber->SetVisAttributes(G4VisAttributes::Invisible);
 	
     G4Tubs* Abs_S_fiber = new G4Tubs("Abs_Scin_fiber", claddingradiusmax, tuberadius, fiberZ/2,0.,2.*pi);
 
@@ -859,7 +874,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolera
     ScincoreVisAtt->SetForceWireframe(true);
     ScincoreVisAtt->SetForceSolid(true);
     logic_Core_S_fiber->SetVisAttributes(ScincoreVisAtt);
-
+//    logic_Core_S_fiber->SetVisAttributes(G4VisAttributes::Invisible);
     G4ThreeVector vec_Core_S;
     vec_Core_S.setX(0.);
     vec_Core_S.setY(0.);
@@ -888,6 +903,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolera
     ScincladVisAtt->SetForceWireframe(true);
     ScincladVisAtt->SetForceSolid(true);
     logic_Clad_S_fiber->SetVisAttributes(ScincladVisAtt);
+//    logic_Clad_S_fiber->SetVisAttributes(G4VisAttributes::Invisible);
 
     G4ThreeVector vec_Clad_S;
     vec_Clad_S.setX(0.);
@@ -909,6 +925,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolera
     TubeVisAtt->SetForceWireframe(true);
     TubeVisAtt->SetForceSolid(true);
     logic_Abs_S_fiber->SetVisAttributes(TubeVisAtt);
+//    logic_Abs_S_fiber->SetVisAttributes(G4VisAttributes::Invisible);
     
     return logic_S_fiber;
 
@@ -934,6 +951,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolera
                                                          absorberMaterial,
                                                          "C_fiber");
 
+//    logic_C_fiber->SetVisAttributes(G4VisAttributes::Invisible);
     G4Tubs* Abs_C_fiber = new G4Tubs("Abs_Cher_fiber", claddingradiusmax, tuberadius, fiberZ/2,0.,2.*pi);
 
     G4LogicalVolume* logic_Abs_C_fiber = new G4LogicalVolume(Abs_C_fiber,
@@ -959,7 +977,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolera
     ChercoreVisAtt->SetForceWireframe(true);
     ChercoreVisAtt->SetForceSolid(true);
     logic_Core_C_fiber->SetVisAttributes(ChercoreVisAtt);
-
+//    logic_Core_C_fiber->SetVisAttributes(G4VisAttributes::Invisible);
     G4ThreeVector vec_Core_C;
     vec_Core_C.setX(0.);
     vec_Core_C.setY(0.);
@@ -987,6 +1005,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolera
     ChercladVisAtt->SetForceWireframe(true);
     ChercladVisAtt->SetForceSolid(true);
     logic_Clad_C_fiber->SetVisAttributes(ChercladVisAtt);
+//    logic_Clad_C_fiber->SetVisAttributes(G4VisAttributes::Invisible);
 
     G4ThreeVector vec_Clad_C;
     vec_Clad_C.setX(0.);
@@ -1007,9 +1026,50 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolera
     TubeVisAtt->SetForceWireframe(true);
     TubeVisAtt->SetForceSolid(true);
     logic_Abs_C_fiber->SetVisAttributes(TubeVisAtt);
+//    logic_Abs_C_fiber->SetVisAttributes(G4VisAttributes::Invisible);
 
     return logic_C_fiber;
 
 }
-
-//**************************************************
+//
+//   method to define polygonal contour of module to extrude
+//
+std::vector<G4TwoVector> DREMTubesDetectorConstruction::calcmod(double radius, int nrow, int ncol) {
+   G4double dxlr=radius;
+   G4double dtubeY=sq3*radius;
+   G4double moduleX = ncol*2.*radius+radius;
+   G4double side=radius*2*sq3m1;
+   G4double moduleY = (nrow-1.)*dtubeY+4.*radius*sq3m1;
+   int nyp=2*nrow+1;
+   int nxp=2*ncol-2;
+   double yp[10000];
+   double xp[10000];
+   yp[0]=0.;
+   xp[0]=0.;
+   for(int i=1;i<nyp;i++){
+     yp[i]=((i-1)%2+1)*0.5*side+yp[i-1];
+     xp[i]=-((i+1)/2)%2*dxlr;
+   }
+   for(int i=nyp;i<(nyp+nxp);i++){
+     int j=i-nyp;
+     yp[i]=yp[nyp-1]+0.5*(i%2)*side;
+     xp[i]=xp[nyp-1]+dxlr*(j+1);
+   }
+   for(int i=(nyp+nxp);i<(2*nyp+nxp);i++){
+     int j=i-nyp-nxp;
+     yp[i]=yp[nyp-j];
+     xp[i]=xp[nyp+nxp-1]+dxlr+((j+1)/2)%2*dxlr;
+   }
+   for(int i=(2*nyp+nxp);i<(2*nyp+2*nxp);i++){
+     int j=i-2*nyp-nxp;	
+     yp[i]=0.5*side*(i%2);
+     xp[i]=xp[nyp+nxp-j-1];
+   }
+//   xp[2*nyp+2*nxp]=0.;
+//   yp[2*nyp+2*nxp]=0.;
+   std::vector<G4TwoVector> polygon1(2*nyp+2*nxp);
+   for(int i=0;i<(2*nyp+2*nxp);i++){
+     polygon1[i].set(-xp[i]+moduleX/2.-radius,yp[i]-moduleY/2.);
+   }
+   return polygon1;
+}

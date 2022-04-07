@@ -16,6 +16,8 @@
 #include "globals.hh"
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
+#include "G4TwoVector.hh"
+#include "G4ExtrudedSolid.hh"
 
 //Forward declaration
 //
@@ -67,7 +69,13 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
 	//
 	G4int GetTowerID( const G4int& cpno ) const;
         G4int GetSiPMID(const G4int& cpno ) const; 
-    
+       
+        //
+	//  Build contour in x-y plane of a module as 
+	//  an hexcell shape
+	//
+	std::vector<G4TwoVector> calcmod(double radius, int nrow, int ncol); 
+
     private:
         
         //Mandatory method for Geant4
@@ -83,43 +91,16 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
 };
 
 inline G4int DREMTubesDetectorConstruction::GetTowerID( const G4int& cpno ) const {
-
-    const G4int row = cpno / 30;
-    const G4int column = (cpno - (row*30)) / 10;
-    G4int TowerID = 99;
-    if (row < 16) {
-        if (column < 1 ){TowerID = 3;}
-	else if ( column < 2 ) {TowerID = 5;}
-	else if ( column < 3 ) {TowerID = 8;}
-    }
-    else if (row < 32) {
-	if (column < 1 ){TowerID = 2;}
-	else if ( column < 2 ) {TowerID = 0;}
-	else if ( column < 3 ) {TowerID = 7;}
-    }
-    else if (row < 48) {
-	if (column < 1 ){TowerID = 1;}
-    	else if ( column < 2 ) {TowerID = 4;}
-    	else if ( column < 3 ) {TowerID = 6;}
-    }
-    //G4cout<<row<<" "<<column<<G4endl; 
-    return TowerID;
+// remap as for 2021 hardware numbering from front face
+//    const G4int idmap[9]={1,2,3,4,0,5,6,7,8};
+// test:remap as for output of old simulation
+    const G4int idmap[9]={3,2,1,5,0,4,8,7,6};
+    return idmap[cpno-1];
 }
 
 inline G4int DREMTubesDetectorConstruction::GetSiPMID( const G4int& cpno ) const {
-		
-    // For Tower0 tubes only
-    //
-    const G4int row = (cpno / 30);
-    const G4int column = ((cpno - (row*30)));
-    G4int index = (row-16)*10+(column-10);
-		
-    if (index > 160) {
-        G4cout<<"ERROR in SiPM indexing!!!"<<G4endl;
-	abort();
-    }
-
-    return index;
+// kept for compatibility with old simulation. Dummy for now
+    return cpno;		
 }
 
 inline const G4VPhysicalVolume* DREMTubesDetectorConstruction::GetLeakCntPV() const {
