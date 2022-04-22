@@ -81,8 +81,12 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
         //Mandatory method for Geant4
         //
         G4VPhysicalVolume* DefineVolumes();
-
-				//Members
+/*
+	void DefineCommands();
+	G4GenericMessenger* fMessenger;
+	G4double fAngleX;
+	G4double fAngleY;
+*/				//Members
 				//
         G4bool  fCheckOverlaps; // option for checking volumes overlaps
 				

@@ -54,7 +54,7 @@ DREMTubesDetectorConstruction::DREMTubesDetectorConstruction()
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
 		fLeakCntPV(nullptr),
-    fWorldPV(nullptr) {
+    fWorldPV(nullptr){
 }
 
 //De-constructor
@@ -327,16 +327,45 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     //
     // Each tower/module has 16*20 fibers 
     // 16*10 Scin and 16*10 Cher
-    G4int Nofmodules = 3; 
-    G4int NofFibersrow = 16;
-    G4int NofFiberscolumn = 20;
+    G4int NofmodulesX = 3; 
+    G4int NofmodulesY = 3;
+    G4int modflag[9]={ 1, 1, 1,  
+                        1, 1, 1,
+         	        1, 1, 1 }; 
+//    G4int modflag[15]={ 0, 1, 1, 1, 0,  
+//	                1, 1, 1, 1, 1,
+//		        0, 1, 1, 1, 0, }; 
+//    G4int modflag[120]={0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
+//                        0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+//                        1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,
+//                        0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+//                        0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0};
+//
+//    Lookup table of the module numbers
+//
+//    G4int modnum[120]={ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10, 0, 0, 0, 0, 0, 0, 0,
+//                        0, 0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30, 0, 0, 
+//                       31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54, 
+//                        0, 0,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74, 0, 0, 
+//                        0, 0, 0, 0, 0, 0, 0,75,76,77,78,79,80,81,82,83,84, 0, 0, 0, 0, 0, 0, 0}; 
+/*
+    G4int modflag[25]={0, 0, 1, 0, 0, 
+	       0, 1, 1, 1, 0, 
+	       1, 1, 1, 1, 1, 
+	       0, 1, 1, 1, 0,
+	       0, 0, 1, 0, 0}; 
+*/
+    G4int NofFiberscolumn = 16;
+    G4int NofFibersrow = 20;
     G4double moduleZ = (1000.)*mm;
     double tolerance = 0.0*mm;
     G4double tuberadius = 1.0*mm;
+    G4bool irot=false;
 //  tubes are packed in Y, so Y distance between two tubes is sqrt(3)/2*2.*tuberadius
     G4double dtubeY=sq3*tuberadius;
-    G4double moduleX = (2*NofFibersrow+1)*tuberadius; 
-    G4double moduleY = (NofFiberscolumn-1.)*dtubeY+4.*tuberadius*sq3m1;
+    G4double dtubeX=2.*tuberadius;
+    G4double moduleX = (2*NofFiberscolumn+1)*tuberadius; 
+    G4double moduleY = (NofFibersrow-1.)*dtubeY+4.*tuberadius*sq3m1;
 //  side of hexagon in which tube is inscribed
 //    G4double side=tuberadius*2*sq3m1;
 
@@ -487,16 +516,32 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
    // Basic module structure: extrusion of an hexcell shape
     G4TwoVector offA(0,0), offB(0,0);
     G4double scaleA = 1, scaleB = 1;
-    auto polygon=calcmod(tuberadius, NofFiberscolumn, NofFibersrow);
-    G4VSolid* moduleequippedS = new G4ExtrudedSolid("moduleequipped", polygon, moduleequippedZ/2, offA, scaleA, offB, scaleB);
+    auto polygon=calcmod(tuberadius, NofFibersrow, NofFiberscolumn);
+    G4VSolid* moduleequippedS = new G4ExtrudedSolid("moduleequipped", 
+		                                     polygon, 
+						     moduleequippedZ/2, 
+						     offA, scaleA, offB, scaleB);
     G4LogicalVolume* moduleequippedLV = new G4LogicalVolume(moduleequippedS,
                                                             defaultMaterial,
                                                             "moduleequipped"); 
 
     // Calorimeter (matrix of modules equipped)
     // 
-    G4VSolid* CalorimeterS = new G4Box("CalorimeterS",
-        moduleequippedX*Nofmodules/2, moduleequippedY*Nofmodules/2, moduleequippedZ/2);                     
+    G4double caloX=0.;
+    G4double caloY=0.;
+    G4double caloZ=0.;
+    if(irot) {
+      caloX=moduleequippedY*NofmodulesX/2;
+      caloY=moduleequippedX*NofmodulesY/2;
+      caloZ=moduleequippedZ/2;      
+    }
+    else {
+      caloX=moduleequippedX*NofmodulesX/2;
+      caloY=moduleequippedY*NofmodulesY/2;
+      caloZ=moduleequippedZ/2;      
+    }
+    G4VSolid* CalorimeterS = new G4Box("CalorimeterS",caloX,caloY,caloZ);
+
     G4LogicalVolume* CalorimeterLV = new G4LogicalVolume( CalorimeterS,
                                                           defaultMaterial,
                                                           "CalorimeterLV");
@@ -506,32 +551,58 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4int copynumbermodule = 0;
     G4double m_x, m_y;
     G4ThreeVector vec_m;
-    //G4VPhysicalVolume* physi_moduleequipped[Nofmodules][Nofmodules];
-    for(int row=0; row<Nofmodules; row++){ 
-        for(int column=0; column<Nofmodules; column++){
-            m_x = 2.*tuberadius*NofFibersrow*(Nofmodules-row-2);
-            m_y = column*NofFiberscolumn*dtubeY-NofFiberscolumn*dtubeY*(Nofmodules-1)/2;
-           
-            vec_m.setX(m_x);
-            vec_m.setY(m_y);
-            vec_m.setZ(0.);
-        
-            copynumbermodule = (1+row)+(column*Nofmodules);
-            /*physi_moduleequipped[row][column] =*/ new G4PVPlacement(0,
-                                                vec_m,              
-                                                moduleequippedLV,     
-                                                "moduleequipped",                        
-                                                CalorimeterLV,                      
-                                                false,                          
-                                                copynumbermodule); 
+    for(int column=0; column<NofmodulesX; column++){ 
+        for(int row=0; row<NofmodulesY; row++){
+	    G4int ii=column+row*NofmodulesX;
+            if(irot) {
+              m_x = -dtubeY*NofFibersrow*column+ dtubeY*NofFibersrow*(NofmodulesX-1)/2;
+              m_y = row*NofFiberscolumn*dtubeX-NofFiberscolumn*dtubeX*(NofmodulesY-1)/2;
+            }
+            else {
+              m_x = -dtubeX*NofFiberscolumn*column+ dtubeX*NofFiberscolumn*(NofmodulesX-1)/2;
+              m_y = row*NofFibersrow*dtubeY-NofFibersrow*dtubeY*(NofmodulesY-1)/2;
+            }	     	    
+            if(modflag[ii]>0) {        
+              copynumbermodule = (1+column)+(row*NofmodulesX);
+//	      std::cout << " column " << column << " row " << row << " cpnm " << copynumbermodule << std::endl;
+// setup for 90 deg rotation of modules
+              if(irot){
+                G4RotationMatrix rotmod  = G4RotationMatrix();
+                rotmod.rotateZ(90.*degree);
+                G4ThreeVector posm;
+                posm.setX(m_x);
+                posm.setY(m_y);
+                posm.setZ(0.);
+                G4Transform3D transfm = G4Transform3D(rotmod,posm);
+                new G4PVPlacement(transfm,
+                                  moduleequippedLV,     
+                                  "moduleequipped",                        
+                                  CalorimeterLV,                      
+                                  false,                          
+                                  copynumbermodule); 
+	      }
+	      else {
+// simple positioning
+                vec_m.setX(m_x);
+                vec_m.setY(m_y);
+                vec_m.setZ(0.);
+                new G4PVPlacement(0,
+                                  vec_m,              
+                                  moduleequippedLV,     
+                                  "moduleequipped",                        
+                                  CalorimeterLV,                      
+                                  false,                          
+                                  copynumbermodule); 
+              } // irot
+	    } //ifmod
         };
     }; 
  
     // Calorimeter placement (with rotation wrt beam axis)
     //
     G4RotationMatrix rotm  = G4RotationMatrix();
-    rotm.rotateY(1.5*deg);  
-    rotm.rotateX(0.35*deg);  
+    rotm.rotateY(1.*degree);  
+    rotm.rotateX(0.*degree);
     G4ThreeVector position;
     position.setX(0.);
     position.setY(0.);
@@ -548,7 +619,10 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     // Module (same shape as moduleequipped)
     //
-    G4VSolid* moduleS = new G4ExtrudedSolid("module", polygon, moduleZ/2, offA, scaleA, offB, scaleB);
+    G4VSolid* moduleS = new G4ExtrudedSolid("module", 
+		                            polygon, 
+					    moduleZ/2, 
+					    offA, scaleA, offB, scaleB);
                          
     G4LogicalVolume* moduleLV = new G4LogicalVolume(moduleS,
                                                     defaultMaterial,
@@ -666,36 +740,36 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     // Attention: I place an optical surface painted (blacked) from the moduleequippedPV 
     // to the SiPMPV, in so doing I completly avoid any cross talk between SiPMs
     //
-    //G4VPhysicalVolume* physi_S_fiber[NofFibersrow][NofFiberscolumn];
-    //G4VPhysicalVolume* physi_SiPM[NofFibersrow][NofFiberscolumn];  
-    //G4LogicalBorderSurface* logic_OpSurface_defaultAir[NofFibersrow][NofFiberscolumn];
+    //G4VPhysicalVolume* physi_S_fiber[NofFiberscolumn][NofFibersrow];
+    //G4VPhysicalVolume* physi_SiPM[NofFiberscolumn][NofFibersrow];  
+    //G4LogicalBorderSurface* logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow];
 		
     G4int copynumber = 0;
 
-    for(int row=0; row<NofFibersrow; row++){
+    for(int column=0; column<NofFiberscolumn; column++){
         
-        std::stringstream S_fiber_row;
-        S_fiber_row.str("");
-        S_fiber_row << row;
+        std::stringstream S_fiber_column;
+        S_fiber_column.str("");
+        S_fiber_column << column;
 
-        for(int column=0; column<NofFiberscolumn; column++){
+        for(int row=0; row<NofFibersrow; row++){
             
-            std::stringstream S_fiber_column;
-            S_fiber_column.str("");
-            S_fiber_column << column;
+            std::stringstream S_fiber_row;
+            S_fiber_row.str("");
+            S_fiber_row << row;
             std::string S_name;
             std::string SiPM_name;
-            S_name = "S_row_" + S_fiber_row.str() + "_column_" + S_fiber_column.str(); 
+            S_name = "S_column_" + S_fiber_column.str() + "_row_" + S_fiber_row.str(); 
             SiPM_name = "S_SiPM"; 
-            //SiPM_name = "SiPMS_row" + S_fiber_row.str() + "_column_" + S_fiber_column.str();
+            //SiPM_name = "SiPMS_column" + S_fiber_column.str() + "_row_" + S_fiber_row.str();
 
             G4double S_x, S_y;
             G4ThreeVector vec_S_fiber;
             G4ThreeVector vec_SiPM;
 
-            if(column%2==0){
-                S_x = +moduleX/2 - tuberadius - (tuberadius*2+2*tolerance)*row;
-                S_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance*mm)*(column)+tuberadius*(2.*sq3m1-1.);
+            if(row%2==0){
+                S_x = +moduleX/2 - tuberadius - (tuberadius*2+2*tolerance)*column;
+                S_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance*mm)*(row)+tuberadius*(2.*sq3m1-1.);
 
                 vec_S_fiber.setX(S_x);
                 vec_S_fiber.setY(S_y);
@@ -705,7 +779,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                 vec_SiPM.setY(S_y);
                 vec_SiPM.setZ(fiberZ/2+SiPMZ/2-0.18);
             
-                copynumber = ((NofFiberscolumn/2)*row+column/2);
+                copynumber = ((NofFibersrow/2)*column+row/2);
                 auto logic_S_fiber = constructscinfiber(tolerance,
                                                         tuberadius,
                                                         fiberZ,
@@ -719,7 +793,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                         CherMaterial);
                 // Tubes with scintillating fiber placement
                 //
-                /*physi_S_fiber[row][column] =*/ new G4PVPlacement(0,
+                /*physi_S_fiber[column][row] =*/ new G4PVPlacement(0,
                                                                vec_S_fiber,
                                                                logic_S_fiber,
                                                                S_name,
@@ -729,7 +803,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
                 // SiPM placement
                 //
-                /*physi_SiPM[row][column] =*/ new G4PVPlacement(0,
+                /*physi_SiPM[column][row] =*/ new G4PVPlacement(0,
                                                             vec_SiPM,
                                                             SiPMLV,
                                                             SiPM_name,
@@ -737,10 +811,10 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                             false,
                                                             copynumber); //same copynumber of fibers 
           
-                /*logic_OpSurface_defaultAir[NofFibersrow][NofFiberscolumn] =
+                /*logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow] =
                     new G4LogicalBorderSurface("logic_OpSurface_defaultAir",
                                                CalorimeterPV, 
-                                               physi_SiPM[row][column],
+                                               physi_SiPM[column][row],
                                                OpSurfacedefault);*/
             }
         };
@@ -748,30 +822,30 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     // Tubes with Cherenkov fibers and SiPM next to them
     //
-    //G4VPhysicalVolume* physi_C_fiber[NofFibersrow][NofFiberscolumn];
+    //G4VPhysicalVolume* physi_C_fiber[NofFiberscolumn][NofFibersrow];
   
-    for(int row=0; row<NofFibersrow; row++){
+    for(int column=0; column<NofFiberscolumn; column++){
         
-        std::stringstream C_fiber_row;
-        C_fiber_row.str("");
-        C_fiber_row << row;
-        for(int column=0; column<NofFiberscolumn; column++){
+        std::stringstream C_fiber_column;
+        C_fiber_column.str("");
+        C_fiber_column << column;
+        for(int row=0; row<NofFibersrow; row++){
             
-            std::stringstream C_fiber_column;
-            C_fiber_column.str("");
-            C_fiber_column << column;
+            std::stringstream C_fiber_row;
+            C_fiber_row.str("");
+            C_fiber_row << row;
             std::string C_name;
             std::string SiPM_name;
-            C_name = "C_row_" + C_fiber_row.str() + "_column_" + C_fiber_column.str(); 
+            C_name = "C_column_" + C_fiber_column.str() + "_row_" + C_fiber_row.str(); 
             SiPM_name = "C_SiPM"; 
 
             G4double C_x, C_y;
             G4ThreeVector vec_C_fiber;
             G4ThreeVector vec_SiPM;
 
-            if(column%2 != 0){
-                C_x = moduleX/2 - tuberadius - tuberadius - (tuberadius*2+2*tolerance)*row;
-                C_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance)*column+tuberadius*(2.*sq3m1-1.);
+            if(row%2 != 0){
+                C_x = moduleX/2 - tuberadius - tuberadius - (tuberadius*2+2*tolerance)*column;
+                C_y = -moduleY/2 + tuberadius + (sq3*tuberadius+2*tolerance)*row+tuberadius*(2.*sq3m1-1.);
 
                 vec_C_fiber.setX(C_x);
                 vec_C_fiber.setY(C_y);
@@ -781,7 +855,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                 vec_SiPM.setY(C_y);
                 vec_SiPM.setZ(fiberZ/2+SiPMZ/2-0.18);
 
-                copynumber = ((NofFiberscolumn/2)*row+column/2);
+                copynumber = ((NofFibersrow/2)*column+row/2);
                         
                 auto logic_C_fiber = constructcherfiber(tolerance,
                                                         tuberadius,
@@ -794,7 +868,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                         claddingradiusmax,
                                                         claddingZ,
                                                         CladCherMaterial);
-                /*physi_C_fiber[row][column] =*/ new G4PVPlacement(0,
+                /*physi_C_fiber[column][row] =*/ new G4PVPlacement(0,
                                                          vec_C_fiber,
                                                          logic_C_fiber,
                                                          C_name,
@@ -802,7 +876,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                          false,
                                                          copynumber);
 
-                /*physi_SiPM[row][column] =*/ new G4PVPlacement(0,
+                /*physi_SiPM[column][row] =*/ new G4PVPlacement(0,
                                                         vec_SiPM,
                                                         SiPMLV,
                                                         SiPM_name,
@@ -810,10 +884,10 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                         false,
                                                         copynumber); //same copynumber of fiber 
 
-                /*logic_OpSurface_defaultAir[NofFibersrow][NofFiberscolumn] =
+                /*logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow] =
                     new G4LogicalBorderSurface("logic_OpSurface_defaultAir",
                                                CalorimeterPV, 
-                                               physi_SiPM[row][column],
+                                               physi_SiPM[column][row],
                                                OpSurfacedefault);*/
             }      
         };
