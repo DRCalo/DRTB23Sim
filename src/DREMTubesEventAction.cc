@@ -11,7 +11,7 @@
 //
 #include "DREMTubesEventAction.hh"
 #include "DREMTubesRunAction.hh"
-
+#include "DREMTubesDetectorConstruction.hh"
 //Includers from Geant4
 //
 #include "g4root.hh"
@@ -75,11 +75,11 @@ void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {
     VecCPMT.clear();
     VecTowerE.clear();
 
-    VectorSignals.assign(160, 0.);
-    VectorSignalsCher.assign(160, 0.);
-    VecSPMT.assign(9, 0.);
-    VecCPMT.assign(9, 0.);
-    VecTowerE.assign(9, 0.);
+    VectorSignals.assign(NoFibersTower*NoModulesSiPM, 0.);
+    VectorSignalsCher.assign(NoFibersTower*NoModulesSiPM, 0.);
+    VecSPMT.assign(NoModulesActive, 0.);
+    VecCPMT.assign(NoModulesActive, 0.);
+    VecTowerE.assign(NoModulesActive, 0.);
 
 }
 

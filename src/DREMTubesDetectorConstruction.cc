@@ -321,47 +321,9 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     //Define Volumes
     //--------------------------------------------------
     
-    //Geometry parameters
-    //
-    // Geometry parameters of the module
-    //
-    // Each tower/module has 16*20 fibers 
-    // 16*10 Scin and 16*10 Cher
-    G4int NofmodulesX = 3; 
-    G4int NofmodulesY = 3;
-    G4int modflag[9]={ 1, 1, 1,  
-                        1, 1, 1,
-         	        1, 1, 1 }; 
-//    G4int modflag[15]={ 0, 1, 1, 1, 0,  
-//	                1, 1, 1, 1, 1,
-//		        0, 1, 1, 1, 0, }; 
-//    G4int modflag[120]={0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
-//                        0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
-//                        1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,
-//                        0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
-//                        0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0};
-//
-//    Lookup table of the module numbers
-//
-//    G4int modnum[120]={ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10, 0, 0, 0, 0, 0, 0, 0,
-//                        0, 0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30, 0, 0, 
-//                       31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54, 
-//                        0, 0,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74, 0, 0, 
-//                        0, 0, 0, 0, 0, 0, 0,75,76,77,78,79,80,81,82,83,84, 0, 0, 0, 0, 0, 0, 0}; 
-/*
-    G4int modflag[25]={0, 0, 1, 0, 0, 
-	       0, 1, 1, 1, 0, 
-	       1, 1, 1, 1, 1, 
-	       0, 1, 1, 1, 0,
-	       0, 0, 1, 0, 0}; 
-*/
-    G4int NofFiberscolumn = 16;
-    G4int NofFibersrow = 20;
-    G4double moduleZ = (1000.)*mm;
+//  tubes are packed in Y, so Y distance between two tubes is sqrt(3)/2*2.*tuberadius
     double tolerance = 0.0*mm;
     G4double tuberadius = 1.0*mm;
-    G4bool irot=false;
-//  tubes are packed in Y, so Y distance between two tubes is sqrt(3)/2*2.*tuberadius
     G4double dtubeY=sq3*tuberadius;
     G4double dtubeX=2.*tuberadius;
     G4double moduleX = (2*NofFiberscolumn+1)*tuberadius; 
@@ -562,8 +524,9 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
               m_x = -dtubeX*NofFiberscolumn*column+ dtubeX*NofFiberscolumn*(NofmodulesX-1)/2;
               m_y = row*NofFibersrow*dtubeY-NofFibersrow*dtubeY*(NofmodulesY-1)/2;
             }	     	    
-            if(modflag[ii]>0) {        
-              copynumbermodule = (1+column)+(row*NofmodulesX);
+            if(modflag[ii]>=0) {        
+              copynumbermodule = modflag[ii];
+//              copynumbermodule = (1+column)+(row*NofmodulesX);
 //	      std::cout << " column " << column << " row " << row << " cpnm " << copynumbermodule << std::endl;
 // setup for 90 deg rotation of modules
               if(irot){

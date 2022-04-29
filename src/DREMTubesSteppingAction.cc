@@ -230,6 +230,7 @@ void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) {
     Fiber = volume->GetName(); 
     G4int TowerID;
     G4int SiPMID = 900;
+    G4int SiPMTower;
     G4int signalhit = 0;
 
     if ( strstr( Fiber.c_str(), S_fiber.c_str() ) ) { //scintillating fiber/tube
@@ -244,12 +245,14 @@ void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) {
 //	 std::cout << " grandmother name " << modvolume->GetName() << " number " << modvolume->GetCopyNo() << std::endl;
 //        std::cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << std::endl;			 
 	TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));
+	SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
 	fEventAction->AddScin(edep);
 	signalhit = fSignalHelper->SmearSSignal( fSignalHelper->ApplyBirks( edep, steplength ) );
-	if ( TowerID != 0 ) { fEventAction->AddVecSPMT( TowerID, signalhit ); }
-	else { 
+//	if ( TowerID != 0 ) { fEventAction->AddVecSPMT( TowerID, signalhit ); }
+	fEventAction->AddVecSPMT( TowerID, signalhit ); 
+	if(SiPMTower > -1){ 
             SiPMID = fDetConstruction->GetSiPMID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));
-	    fEventAction->AddVectorScin( signalhit, SiPMID ); 
+	    fEventAction->AddVectorScin( signalhit, SiPMTower*NoFibersTower+SiPMID ); 
         }
     }
 
@@ -279,10 +282,13 @@ void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) {
 	        case TotalInternalReflection: {
 		    G4int c_signal = fSignalHelper->SmearCSignal( );								
 		    TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));		
-		    if ( TowerID != 0 ) { fEventAction->AddVecCPMT( TowerID, c_signal ); }
-		    else { 
+	            SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
+		    fEventAction->AddVecCPMT( TowerID, c_signal );
+//		    if ( TowerID != 0 ) { fEventAction->AddVecCPMT( TowerID, c_signal ); }
+
+		    if(SiPMTower > -1){ 
 		        SiPMID = fDetConstruction->GetSiPMID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));
-			fEventAction->AddVectorCher(SiPMID, c_signal);
+			fEventAction->AddVectorCher(SiPMTower*NoFibersTower+SiPMID, c_signal);
 	            }
 		    step->GetTrack()->SetTrackStatus( fStopAndKill );
 		}
