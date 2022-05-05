@@ -564,11 +564,15 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     // Calorimeter placement (with rotation wrt beam axis)
     //
     G4RotationMatrix rotm  = G4RotationMatrix();
-    rotm.rotateY(1.*degree);  
-    rotm.rotateX(0.*degree);
+    G4double xrot=2.5*deg;
+    G4double yrot=2.5*deg;
+    rotm.rotateX(xrot);  
+    rotm.rotateY(yrot);
     G4ThreeVector position;
-    position.setX(0.);
-    position.setY(0.);
+    G4double ycomp=-1090*mm*sin(xrot);
+    G4double xcomp=1090*mm*sin(yrot);
+    position.setX(xcomp);
+    position.setY(ycomp);
     position.setZ(0.);
     G4Transform3D transform = G4Transform3D(rotm,position); 
 
