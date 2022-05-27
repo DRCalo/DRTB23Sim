@@ -5,6 +5,7 @@
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 #include <array>
+#include <cstdint>
 #include <math.h>
 #include <stdint.h>
 
@@ -76,6 +77,19 @@ public:
 
   constexpr double rotationV() const { return m_RotationVertical; }
   constexpr double rotationH() const { return m_RotationHorizontal; }
+  
+  // TODO: avoid hard coded "24*5". It should be m_NoModulesX * m_NoModulesY
+  // but those variables are defined as private members later due to ODR
+  constexpr std::array<int32_t, 24*5> moduleFlag() const { 
+    return m_ModuleFlag;
+  }
+  constexpr uint8_t nActiveModules() const { return m_NoActiveModules; }
+  constexpr uint8_t nSiPMModules() const { return m_NoSiPMModules; }
+  // TODO: avoid hard coded "10". It shoul be m_NoSiPMModules
+  // but this variable is defined as private member later due to ODR
+  constexpr std::array<int32_t, 10> idxSiPMModules() const { 
+    return m_SiPMModuleIdx;
+  }
 
 private:
   static constexpr uint8_t m_NoModulesX = 24;
@@ -102,22 +116,20 @@ private:
   static constexpr double m_RotationVertical = 0.0 * deg;
   static constexpr double m_RotationHorizontal = 0.0 * deg;
 
-  static constexpr std::array<int32_t, m_NoModulesX *m_NoModulesY>
-      m_ModuleFlag = {-1, -1, -1, -1, -1, -1, -1, 0,  1,  2,  3,  4,  5,  6,
-                      7,  8,  9,  -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 11,
-                      12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-                      26, 27, 28, 29, -1, -1, 30, 31, 32, 33, 34, 35, 36, 37,
-                      38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
-                      52, 53, -1, -1, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-                      64, 65, 66, 67, 68, 69, 70, 71, 72, 73, -1, -1, -1, -1,
-                      -1, -1, -1, -1, -1, 74, 75, 76, 77, 78, 79, 80, 81, 82,
-                      83, -1, -1, -1, -1, -1, -1, -1};
+  static constexpr std::array<int32_t, m_NoModulesX * m_NoModulesY>
+      m_ModuleFlag = {-1, -1, -1, -1, -1, -1, -1, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  -1, -1, -1, -1, -1, -1, -1,
+                      -1, -1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, -1, -1,
+                      30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+                      -1, -1, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, -1, -1,
+                      -1, -1, -1, -1, -1, -1, -1, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, -1, -1, -1, -1, -1, -1, -1};
   static constexpr uint8_t m_NoActiveModules = 84;
   static constexpr uint8_t m_NoSiPMModules = 10;
   static constexpr std::array<int32_t, m_NoSiPMModules> m_SiPMModuleIdx = {
       37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
-  // Avoid copy/move/assign of singleton class
-  // Deleted ctor
+  // A singleton class cannot be copied moved or assigned
+  // Delete all "rule of 5" methods and declare ctor as private
+  //
+  // Private ctor
   HidraGeometryConstants() = default;
   // Deleted copy ctor
   HidraGeometryConstants(const HidraGeometryConstants &) = delete;
