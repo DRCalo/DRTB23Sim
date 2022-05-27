@@ -46,8 +46,8 @@ public:
     return 2 * m_FiberCoregOuterRadius;
   }
 
-  constexpr uint8_t nTubesInModulX() const { return m_NoTubesInModuleOnX; }
-  constexpr uint8_t nTubesInModulY() const { return m_NoTubesInModuleOnY; }
+  constexpr uint8_t nTubesInModuleX() const { return m_NoTubesInModuleOnX; }
+  constexpr uint8_t nTubesInModuleY() const { return m_NoTubesInModuleOnY; }
 
   constexpr double sipmSizeX() const { return m_SiPMCoatingSizeXY; }
   constexpr double sipmSizeY() const { return m_SiPMCoatingSizeXY; }
@@ -59,7 +59,9 @@ public:
   constexpr double moduleSizeX() const {
     return 2 * m_TubeOuterRadius * m_NoTubesInModuleOnX;
   }
-  constexpr double moduleSizeY() const { return m_TubeOuterRadius * m_NoTubesInModuleOnY * std::sqrt(3); }
+  constexpr double moduleSizeY() const {
+    return m_TubeOuterRadius * m_NoTubesInModuleOnY * std::sqrt(3);
+  }
   constexpr double moduleSizeZ() const {
     return m_TubeLength + m_SIPMCoatingSizeZ;
   }
