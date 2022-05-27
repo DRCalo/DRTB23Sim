@@ -5,14 +5,13 @@
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 #include <array>
-#include <cstdint>
 #include <math.h>
 #include <stdint.h>
 
 class HidraGeometryConstants {
 public:
   static HidraGeometryConstants *GetInstance() {
-    // In c++11 static function members are thread safe
+    // In C++11 static function members are thread safe
     // Read access to this class is thread safe, write is undefined behaivor!
     static HidraGeometryConstants *instance = new HidraGeometryConstants();
     return instance;
@@ -130,7 +129,7 @@ private:
   // Delete all "rule of 5" methods and declare ctor as private
   //
   // Private ctor
-  HidraGeometryConstants() = default;
+  constexpr HidraGeometryConstants() = default;
   // Deleted copy ctor
   HidraGeometryConstants(const HidraGeometryConstants &) = delete;
   // Deleted copy assign
