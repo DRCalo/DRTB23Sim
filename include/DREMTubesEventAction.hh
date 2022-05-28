@@ -36,6 +36,7 @@ class DREMTubesEventAction : public G4UserEventAction {
         void AddCher(G4double de);//Add energy in Cherenkov fibers
         void Addenergy(G4double de);//Add energy depositedin calo
         void SavePrimaryPDGID(G4int pdgid);
+        void SavePrimaryXY(G4double x, G4double y);
         void SaveAbsorberMaterial(G4String AbsorberMaterialName);
         void SavePrimaryEnergy(G4double primaryparticleenergy);
         void AddEscapedEnergy(G4double escapedenergy);
@@ -73,6 +74,8 @@ class DREMTubesEventAction : public G4UserEventAction {
         G4double  EnergyTot;  //Total energy deposited (does not count invisibile energy)
         G4int     PrimaryPDGID; //PDGID of primary particle
         G4double  PrimaryParticleEnergy; //Primary particle energy
+        G4double  PrimaryX; //Primary particle energy
+        G4double  PrimaryY; //Primary particle energy
         G4double  EscapedEnergy; //Energy deposited in leakage absorber
 	G4double  PSEnergy;
 
@@ -103,6 +106,11 @@ inline void DREMTubesEventAction::AddEscapedEnergy(G4double escapedenergy){
 inline void DREMTubesEventAction::SavePrimaryPDGID(G4int pdgid){
     PrimaryPDGID = pdgid;
 }
+inline void DREMTubesEventAction::SavePrimaryXY(G4double x, G4double y){
+    PrimaryX = x;
+    PrimaryY = y;
+}
+
 
 inline void DREMTubesEventAction::SavePrimaryEnergy(G4double primaryparticleenergy){
     PrimaryParticleEnergy = primaryparticleenergy;

@@ -54,6 +54,8 @@ DREMTubesRunAction::DREMTubesRunAction( DREMTubesEventAction* eventAction )
     analysisManager->CreateNtupleIColumn("PrimaryPDGID");                   //6
     analysisManager->CreateNtupleDColumn("EscapedEnergy");                  //7
     analysisManager->CreateNtupleDColumn("PSEnergy");                       //8
+    analysisManager->CreateNtupleDColumn("PrimaryX");                       //9
+    analysisManager->CreateNtupleDColumn("PrimaryY");                       //10
     analysisManager->CreateNtupleDColumn("VectorSignals", fEventAction->GetVectorSignals());
     analysisManager->CreateNtupleDColumn("VectorSignalsCher", fEventAction->GetVectorSignalsCher());
     analysisManager->CreateNtupleDColumn("VecTowerE", fEventAction->GetVecTowerE());

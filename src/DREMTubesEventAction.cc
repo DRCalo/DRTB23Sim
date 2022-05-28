@@ -11,7 +11,7 @@
 //
 #include "DREMTubesEventAction.hh"
 #include "DREMTubesRunAction.hh"
-
+#include "DREMTubesDetectorConstruction.hh"
 //Includers from Geant4
 //
 #include "g4root.hh"
@@ -35,6 +35,8 @@ DREMTubesEventAction::DREMTubesEventAction()
     NofScinDet(0),
     EnergyTot(0.),
     PrimaryPDGID(0),
+    PrimaryX(0),
+    PrimaryY(0),
     PrimaryParticleEnergy(0.),
     EscapedEnergy(0.),
     PSEnergy(0.),
@@ -61,6 +63,8 @@ void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {
     NofScinDet = 0;
     EnergyTot = 0.;
     PrimaryPDGID = 0;
+    PrimaryX = 0;
+    PrimaryY = 0;
     PrimaryParticleEnergy = 0.;
     EscapedEnergy = 0.;
     PSEnergy = 0.;
@@ -71,11 +75,11 @@ void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {
     VecCPMT.clear();
     VecTowerE.clear();
 
-    VectorSignals.assign(160, 0.);
-    VectorSignalsCher.assign(160, 0.);
-    VecSPMT.assign(9, 0.);
-    VecCPMT.assign(9, 0.);
-    VecTowerE.assign(9, 0.);
+    VectorSignals.assign(NoFibersTower*NoModulesSiPM, 0.);
+    VectorSignalsCher.assign(NoFibersTower*NoModulesSiPM, 0.);
+    VecSPMT.assign(NoModulesActive, 0.);
+    VecCPMT.assign(NoModulesActive, 0.);
+    VecTowerE.assign(NoModulesActive, 0.);
 
 }
 
@@ -102,6 +106,8 @@ void DREMTubesEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleIColumn(6, PrimaryPDGID);
     analysisManager->FillNtupleDColumn(7, EscapedEnergy);
     analysisManager->FillNtupleDColumn(8, PSEnergy);
+    analysisManager->FillNtupleDColumn(9, PrimaryX);
+    analysisManager->FillNtupleDColumn(10,PrimaryY);
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled
 
