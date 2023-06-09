@@ -102,7 +102,7 @@ Here is my standard Geant4 installation (example with Geant4.10.7.p01) starting 
    -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_BUILD_MULTITHREADED=ON \
    -DGEANT4_USE_GDML=ON ../geant4.10.07.p01
    ```
-3. make it
+3. make it (using N threads, e.g. -j 4)
    ```sh
    make -jN
    make install
