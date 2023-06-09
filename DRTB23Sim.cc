@@ -1,8 +1,9 @@
 //**************************************************
-// \file DREMTubes.cc
-// \brief: main() of DREMTubes project
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
-// \start date: 7 July 2021
+// \file DRTB23Sim.cc
+// \brief: main() of DRTB23Sim project
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
+// @lopezzot
+// \start date: 9 June 2023
 //**************************************************
 
 // Includers from project files
@@ -121,9 +122,9 @@ int main(int argc, char** argv) {
         UImanager->ApplyCommand(command+macro);
     }
     else  { //start UI session  
-    UImanager->ApplyCommand("/control/execute DREMTubes_init_vis.mac");
+    UImanager->ApplyCommand("/control/execute DRTB23Sim_init_vis.mac");
     if (ui->IsGUI()) {
-      UImanager->ApplyCommand("/control/execute DREMTubes_gui.mac");
+      UImanager->ApplyCommand("/control/execute DRTB23Sim_gui.mac");
     }
     ui->SessionStart();
     delete ui;
