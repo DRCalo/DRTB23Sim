@@ -576,10 +576,43 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     position.setZ(0.);
     G4Transform3D transform = G4Transform3D(rotm,position); 
 
-    /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(transform,
+    // Volumes for the rotating platform the TB prototype is placed on
+    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume", 0, 1500*mm, 1000*mm, 0., 2.*pi);
+
+    G4LogicalVolume* rotating_volume_logical = new G4LogicalVolume( rotating_volume_solid,
+                                                          defaultMaterial,
+                                                          "rotating_volume_logical");
+
+    G4RotationMatrix rot_vol_rotmat  = G4RotationMatrix();
+    G4double rot_vol_xrot=90*deg;
+    rot_vol_rotmat.rotateX(rot_vol_xrot);
+    // Inverse rotation for calo to be pointed towards z 
+    //G4RotationMatrix calo_rotmat = G4RotationMatrix();
+    G4RotationMatrix calo_rotmat = rot_vol_rotmat.inverse();
+
+    // Further roation of volume
+    rot_vol_rotmat.rotateX(2.5*deg);
+
+    // Vertical rotation of module
+    calo_rotmat.rotateX(2.5*deg);
+
+    G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat, G4ThreeVector());  
+
+    /*G4VPhysicalVolume* rotating_volume_placed =*/ new G4PVPlacement(rot_vol_transfm,
+                                                                      rotating_volume_logical,
+                                                                      "RotatingVolume",
+                                                                      worldLV,
+                                                                      false,
+                                                                      0,
+                                                                      fCheckOverlaps);
+
+    
+    
+    G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, G4ThreeVector()); 
+    /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(calo_transfm,
                                                          CalorimeterLV,
                                                          "Calorimeter",
-                                                         worldLV,
+                                                         rotating_volume_logical,
                                                          false,
                                                          0,
                                                          fCheckOverlaps);
