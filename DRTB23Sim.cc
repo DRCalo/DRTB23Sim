@@ -33,7 +33,7 @@ namespace PrintUsageError {
     G4cerr << "->DREMTubes usage: " << G4endl;
     G4cerr << "DREMTubes [-m macro ] [-u UIsession] [-t nThreads] [-pl PhysicsList]" 
         << G4endl;
-    G4cerr << "          [-opt FullOptic]" << G4endl;
+    G4cerr << "          [-opt FullOptic] [-vert VerticalRotation]" << G4endl;
     }
 }
 
@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     G4String session;
     G4String custom_pl = "FTFP_BERT"; //default physics list
     G4bool FullOptic = false;
+    G4bool VertRot = false;
     #ifdef G4MULTITHREADED
     G4int nThreads = 0;
     #endif
@@ -64,6 +65,8 @@ int main(int argc, char** argv) {
         else if ( G4String(argv[i]) == "-pl") custom_pl = argv[i+1];
         else if ( G4String(argv[i]) == "-opt") FullOptic =  
                                             G4UIcommand::ConvertToBool(argv[i+1]);
+        else if ( G4String(argv[i]) == "-vert") VertRot = 
+                                            G4UIcommand::ConvertToBool(argv[i+1]); 
         #ifdef G4MULTITHREADED
         else if ( G4String(argv[i]) == "-t" ) {
             nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -77,7 +80,12 @@ int main(int argc, char** argv) {
 
     //Print if FullOptic option is on
     //
-    if (FullOptic){ G4cout<<"DREMTubes-> Run with full optical description"<<G4endl; } 
+    if (FullOptic){ G4cout<<"DREMTubes-> Run with full optical description"<<G4endl; }
+
+    //Print if VertRot option is on
+    //
+    if (VertRot){ G4cout<<"DREMTubes-> Run with vertical rotation of calorimeter"<<G4endl; }
+
   
     // Detect interactive mode (if no macro provided) and define UI session
     //
@@ -99,7 +107,7 @@ int main(int argc, char** argv) {
 
     // Set mandatory initialization classes
     //
-    auto DetConstruction = new DREMTubesDetectorConstruction();
+    auto DetConstruction = new DREMTubesDetectorConstruction(VertRot);
     runManager->SetUserInitialization(DetConstruction);
 
     runManager->SetUserInitialization(new DREMTubesPhysicsList(custom_pl, FullOptic ));

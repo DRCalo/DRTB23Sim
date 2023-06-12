@@ -31,7 +31,7 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
     public:
         //Constructor
         //
-        DREMTubesDetectorConstruction();
+        DREMTubesDetectorConstruction(const G4bool VerRot);
         //De-constructor
         //
         virtual ~DREMTubesDetectorConstruction();
@@ -95,6 +95,8 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
 				
 				G4VPhysicalVolume* fLeakCntPV; //PV: lekage counter
 				G4VPhysicalVolume* fWorldPV;   //PV: wourld volume
+
+        G4bool fVertRot;  
 };
 
 inline G4int DREMTubesDetectorConstruction::GetTowerID( const G4int& cpno ) const {

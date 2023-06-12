@@ -50,11 +50,12 @@ const G4double sq3m1=sq3/3.;
 
 //Constructor
 //
-DREMTubesDetectorConstruction::DREMTubesDetectorConstruction()
+DREMTubesDetectorConstruction::DREMTubesDetectorConstruction(const G4bool VertRot)
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
 		fLeakCntPV(nullptr),
-    fWorldPV(nullptr){
+    fWorldPV(nullptr),
+    fVertRot(VertRot){
 }
 
 //De-constructor
@@ -635,9 +636,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4RotationMatrix calo_rotmat = rot_vol_rotmat.inverse();
 
     // Vertical rotation of module
-    // TODO: implement as flag to be switched on and off
-    bool VerticalRotation = true;
-    double vert_rot = VerticalRotation ? -2.5*deg : 0.0*deg;
+    double vert_rot = fVertRot ? -2.5*deg : 0.0*deg;
     calo_rotmat.rotateX(vert_rot);
 
     double calo_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*caloZ + cos(vert_rot)*caloY);

@@ -56,15 +56,16 @@ The project targets a standalone Geant4 simulation of the dual-readout electroma
    cmake -DGeant4_DIR=/absolute_path_to/geant4.10.07_p01-install/lib/Geant4-10.7.1/ relative_path_to/DRTB23Sim/
    make
    ```
-4. execute (example with DRTB23Sim_run.mac macro card, 2 thread, FTFP_BERT physics list and no optical propagation)
+4. execute (example with DRTB23Sim_run.mac macro card, 2 thread, FTFP_BERT physics list, no optical propagation, and no vertical rotation of the calorimeter)
    ```sh
-   ./DRTB23Sim -m DRTB23Sim_run.mac -t 2 -pl FTFP_BERT -opt false
+   ./DRTB23Sim -m DRTB23Sim_run.mac -t 2 -pl FTFP_BERT -opt false -vert false
    ```
 Parser options
    * -m macro.mac: pass a Geant4 macro card 
    * -t integer: pass number of threads for multi-thread execution (example -t 3, default t 2)
    * -pl Physics_List: select Geant4 physics list (example -pl FTFP_BERT)
    * -opt FullOptic: boolean variable to switch on (true) the optical photon propagation in fibers (example -opt true, default false)
+   * -vert VertRot: boolean to switch on (true) vertical rotation of the calorimeter (example -vert true, default false)
 
 ### Build, compile and execute on lxplus
 1. git clone the repo
