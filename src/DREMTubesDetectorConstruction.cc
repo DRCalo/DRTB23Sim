@@ -576,25 +576,19 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     position.setZ(0.);
     G4Transform3D transform = G4Transform3D(rotm,position); 
 
-    // Volumes for the rotating platform the TB prototype is placed on
-    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume", 0, 1500*mm, 1000*mm, 0., 2.*pi);
+    // Volumes for implementing the rotating platform at the testbeam
+    // Mother volume for platform and calo filled with air (defaultMaterial)
+    double platform_radius = 1500*mm;    // Radius guessed for now
+    double air_volume_half_height = 1000*mm; // More or less random, needs to be large enough to contain prototype
+    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
 
     G4LogicalVolume* rotating_volume_logical = new G4LogicalVolume( rotating_volume_solid,
-                                                          defaultMaterial,
-                                                          "rotating_volume_logical");
+                                                                    defaultMaterial,
+                                                                    "rotating_volume_logical");
 
     G4RotationMatrix rot_vol_rotmat  = G4RotationMatrix();
     G4double rot_vol_xrot=90*deg;
     rot_vol_rotmat.rotateX(rot_vol_xrot);
-    // Inverse rotation for calo to be pointed towards z 
-    //G4RotationMatrix calo_rotmat = G4RotationMatrix();
-    G4RotationMatrix calo_rotmat = rot_vol_rotmat.inverse();
-
-    // Further roation of volume
-    rot_vol_rotmat.rotateX(2.5*deg);
-
-    // Vertical rotation of module
-    calo_rotmat.rotateX(2.5*deg);
 
     G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat, G4ThreeVector());  
 
@@ -606,9 +600,46 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                       0,
                                                                       fCheckOverlaps);
 
+
+
+    // Volumes for the iron platform the prototype is placed on
+    double platform_half_height = 100*mm;     // Height guessed for now
+    G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
+    G4Tubs* iron_platform_solid = new G4Tubs("iron_platform", 0, platform_radius, platform_half_height, 0., 2.*pi);
+
+    G4LogicalVolume* iron_platform_logical = new G4LogicalVolume(iron_platform_solid,
+                                                                 platformMaterial,
+                                                                 "iron_platform_logical");
+
+    G4ThreeVector iron_plat_pos = G4ThreeVector(0, 0, air_volume_half_height-platform_half_height);
+    G4Transform3D iron_plat_transfm = G4Transform3D(G4RotationMatrix(), iron_plat_pos);
+
+    /*G4VPhysicalVolume* iron_platform_placed =*/ new G4PVPlacement(iron_plat_transfm,
+                                                                    iron_platform_logical,
+                                                                    "IronPlatform",
+                                                                    rotating_volume_logical,
+                                                                    false,
+                                                                    0,
+                                                                    fCheckOverlaps);
+                                                                
+    
+
+
+
+    // Inverse rotation for calo to be pointed towards z 
+    G4RotationMatrix calo_rotmat = rot_vol_rotmat.inverse();
+
+    // Vertical rotation of module
+    // TODO: implement as flag to be switched on and off
+    bool VerticalRotation = true;
+    double vert_rot = VerticalRotation ? 2.5*deg : 0.0*deg;
+    calo_rotmat.rotateX(vert_rot);
+
+    double calo_shift = (air_volume_half_height-2*platform_half_height) - (sin(vert_rot)*caloZ + cos(vert_rot)*caloY);
+    G4ThreeVector calo_pos = G4ThreeVector(0, 0, calo_shift);
     
     
-    G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, G4ThreeVector()); 
+    G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, calo_pos); 
     /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(calo_transfm,
                                                          CalorimeterLV,
                                                          "Calorimeter",
