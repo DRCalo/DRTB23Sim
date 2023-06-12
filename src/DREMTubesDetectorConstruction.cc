@@ -586,11 +586,16 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                     defaultMaterial,
                                                                     "rotating_volume_logical");
 
+    // Rotation to bring the G4Tubs into the right Orientation
     G4RotationMatrix rot_vol_rotmat  = G4RotationMatrix();
     G4double rot_vol_xrot=90*deg;
     rot_vol_rotmat.rotateX(rot_vol_xrot);
 
-    G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat, G4ThreeVector());  
+    // Horizontal rotation of the platform (including prototype)
+    G4RotationMatrix rot_vol_rotmat2  = G4RotationMatrix();
+    rot_vol_rotmat2.rotateY(0*deg);
+
+    G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, G4ThreeVector());  
 
     /*G4VPhysicalVolume* rotating_volume_placed =*/ new G4PVPlacement(rot_vol_transfm,
                                                                       rotating_volume_logical,
@@ -632,10 +637,10 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     // Vertical rotation of module
     // TODO: implement as flag to be switched on and off
     bool VerticalRotation = true;
-    double vert_rot = VerticalRotation ? 2.5*deg : 0.0*deg;
+    double vert_rot = VerticalRotation ? -2.5*deg : 0.0*deg;
     calo_rotmat.rotateX(vert_rot);
 
-    double calo_shift = (air_volume_half_height-2*platform_half_height) - (sin(vert_rot)*caloZ + cos(vert_rot)*caloY);
+    double calo_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*caloZ + cos(vert_rot)*caloY);
     G4ThreeVector calo_pos = G4ThreeVector(0, 0, calo_shift);
     
     
