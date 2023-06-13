@@ -39,6 +39,8 @@
 #include "G4Sphere.hh"
 #include "G4Colour.hh"
 #include "G4TwoVector.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4UnionSolid.hh"
 
 //
 //  sqrt3 constants used in code
@@ -577,11 +579,14 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     position.setZ(0.);
     G4Transform3D transform = G4Transform3D(rotm,position); 
 
-    // Volumes for implementing the rotating platform at the testbeam
+    /*****************************************************************
+    * Volumes for implementing the rotating platform at the testbeam *
+    ******************************************************************/ 
+
     // Mother volume for platform and calo filled with air (defaultMaterial)
     double platform_radius = 600*mm;    // Radius guessed for now
-    double air_volume_half_height = 200*mm; // More or less random, needs to be large enough to contain prototype
-    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
+    double air_volume_half_height = 500*mm; // More or less random, needs to be large enough to contain prototype
+    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume_solid", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
 
     G4LogicalVolume* rotating_volume_logical = new G4LogicalVolume( rotating_volume_solid,
                                                                     defaultMaterial,
@@ -598,20 +603,22 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, G4ThreeVector());  
 
-    /*G4VPhysicalVolume* rotating_volume_placed =*/ new G4PVPlacement(rot_vol_transfm,
-                                                                      rotating_volume_logical,
-                                                                      "RotatingVolume",
-                                                                      worldLV,
-                                                                      false,
-                                                                      0,
-                                                                      fCheckOverlaps);
+    /*G4VPhysicalVolume* rotating_volume_physical =*/ new G4PVPlacement(rot_vol_transfm,
+                                                                        rotating_volume_logical,
+                                                                        "RotatingVolume",
+                                                                        worldLV,
+                                                                        false,
+                                                                        0,
+                                                                        fCheckOverlaps);
 
 
 
-    // Volumes for the iron platform the prototype is placed on
+    /***********************************************************
+    * Volumes for the iron platform the prototype is placed on *
+    ************************************************************/
     double platform_half_height = 25*mm;     // Height guessed for now
     G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
-    G4Tubs* iron_platform_solid = new G4Tubs("iron_platform", 0, platform_radius, platform_half_height, 0., 2.*pi);
+    G4Tubs* iron_platform_solid = new G4Tubs("iron_platform_solid", 0, platform_radius, platform_half_height, 0., 2.*pi);
 
     G4LogicalVolume* iron_platform_logical = new G4LogicalVolume(iron_platform_solid,
                                                                  platformMaterial,
@@ -620,34 +627,105 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4ThreeVector iron_plat_pos = G4ThreeVector(0, 0, air_volume_half_height-platform_half_height);
     G4Transform3D iron_plat_transfm = G4Transform3D(G4RotationMatrix(), iron_plat_pos);
 
-    /*G4VPhysicalVolume* iron_platform_placed =*/ new G4PVPlacement(iron_plat_transfm,
-                                                                    iron_platform_logical,
-                                                                    "IronPlatform",
-                                                                    rotating_volume_logical,
-                                                                    false,
-                                                                    0,
-                                                                    fCheckOverlaps);
-                                                                
+    /*G4VPhysicalVolume* iron_platform_physical =*/ new G4PVPlacement(iron_plat_transfm,
+                                                                      iron_platform_logical,
+                                                                      "IronPlatform",
+                                                                      rotating_volume_logical,
+                                                                      false,
+                                                                      0,
+                                                                      fCheckOverlaps);
+                                                                    
     
+    /******************************************
+    * Housing and support for the calorimeter *
+    *******************************************/
+    // Variables needed for both housing and support
+    G4Material* aluminiumMaterial = nistManager->FindOrBuildMaterial("G4_Al");
+    G4RotationMatrix* unit_rotation = new G4RotationMatrix();
+
+    // housing of calorimter
+    double housing_half_length = 163.5*cm/2;
+    double housing_half_width  = 18.0*cm/2;
+    double housing_half_height = 15.4*cm/2;
+
+    G4Box* outer_housing_solid = new G4Box("outer_housing_solid", housing_half_width, housing_half_height, housing_half_length);
+
+    double side_wall_thickness = 1.0*mm;
+    double top_wall_thickness  = 1.0*mm;
+    double bot_wall_thickness  = 14.0*mm;
+    double subtract_box_half_width = housing_half_width - side_wall_thickness;
+    double subtract_box_half_height = housing_half_height - (top_wall_thickness+bot_wall_thickness)/2;
+
+    G4Box* subtract_box_solid = new G4Box("subtract_box", subtract_box_half_width, subtract_box_half_height, housing_half_length);
+
+    G4ThreeVector subtract_box_pos = G4ThreeVector(0, (bot_wall_thickness-top_wall_thickness)/2, 0);
+    G4SubtractionSolid* housing_solid = new G4SubtractionSolid("housing_solid", outer_housing_solid, subtract_box_solid, unit_rotation, subtract_box_pos);
+
+
+    // approximated support structure on which housing is placed
+    double support_half_height = 10.0*cm/2;
+
+    G4Box* outer_support_solid = new G4Box("outer_support_solid", housing_half_width, support_half_height, housing_half_length);
+
+    double support_wall_thickness = 7.0*mm;
+    double subtract_support_width = housing_half_width - support_wall_thickness;
+    double subtract_support_height = support_half_height - support_wall_thickness;
+    G4Box* subtract_support = new G4Box("subtract_support", subtract_support_width, subtract_support_height, housing_half_length);
+
+    G4SubtractionSolid* support_solid = new G4SubtractionSolid("support_solid", outer_support_solid, subtract_support);
+
+
+    // Union of housing and support to only have to place one volume (easier for vertical rotation)
+    G4ThreeVector union_pos = G4ThreeVector(0, -(housing_half_height+support_half_height), 0);
+    G4UnionSolid* fullbox_solid = new G4UnionSolid("fullbox_solid", housing_solid, support_solid, unit_rotation, union_pos);
 
 
 
-    // Inverse rotation for calo to be pointed towards z 
-    G4RotationMatrix calo_rotmat = rot_vol_rotmat.inverse();
 
+    G4LogicalVolume* fullbox_logical = new G4LogicalVolume( fullbox_solid,
+                                                            aluminiumMaterial,
+                                                            "fullbox_logical");
+
+    // Inverse rotation of rotating_volume for calo to be pointed towards z 
+    G4RotationMatrix fullbox_rotmat = rot_vol_rotmat.inverse();
     // Vertical rotation of module
     double vert_rot = fVertRot ? -2.5*deg : 0.0*deg;
-    calo_rotmat.rotateX(vert_rot);
+    fullbox_rotmat.rotateX(vert_rot);
 
-    double calo_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*caloZ + cos(vert_rot)*caloY);
-    G4ThreeVector calo_pos = G4ThreeVector(0, 0, calo_shift);
-    
-    
-    G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, calo_pos); 
+    double fullbox_half_Z = housing_half_length;
+    double fullbox_centre_Y = housing_half_height+ 2*support_half_height; // Centre of union volume based on first solid
+    std::cout<<"fullbox_half_Y = "<<fullbox_centre_Y<<std::endl;
+
+    double fullbox_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*fullbox_half_Z + cos(vert_rot)*fullbox_centre_Y);
+
+    std::cout<<"fullbox_shift = "<<fullbox_shift<<std::endl;
+    G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
+
+    G4Transform3D fullbox_transfm = G4Transform3D(fullbox_rotmat, fullbox_pos); 
+    /*G4VPhysicalVolume* fullbox_physical =*/ new G4PVPlacement(fullbox_transfm,
+                                                                fullbox_logical,
+                                                                "FullBox",
+                                                                rotating_volume_logical,
+                                                                false,
+                                                                0,
+                                                                fCheckOverlaps);
+
+
+
+    /**************
+    * Calorimeter *
+    ***************/
+
+    G4RotationMatrix calo_rotmat = G4RotationMatrix();
+    double fullbox_floor = housing_half_height - bot_wall_thickness;
+    double calo_shift = fullbox_floor - caloY;
+    G4ThreeVector calo_pos = G4ThreeVector(0, -calo_shift, 0);
+
+    G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, calo_pos);    
     /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(calo_transfm,
                                                          CalorimeterLV,
                                                          "Calorimeter",
-                                                         rotating_volume_logical,
+                                                         fullbox_logical,
                                                          false,
                                                          0,
                                                          fCheckOverlaps);
