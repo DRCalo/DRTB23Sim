@@ -579,8 +579,8 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     // Volumes for implementing the rotating platform at the testbeam
     // Mother volume for platform and calo filled with air (defaultMaterial)
-    double platform_radius = 1500*mm;    // Radius guessed for now
-    double air_volume_half_height = 1000*mm; // More or less random, needs to be large enough to contain prototype
+    double platform_radius = 600*mm;    // Radius guessed for now
+    double air_volume_half_height = 200*mm; // More or less random, needs to be large enough to contain prototype
     G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
 
     G4LogicalVolume* rotating_volume_logical = new G4LogicalVolume( rotating_volume_solid,
@@ -609,7 +609,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
 
     // Volumes for the iron platform the prototype is placed on
-    double platform_half_height = 100*mm;     // Height guessed for now
+    double platform_half_height = 25*mm;     // Height guessed for now
     G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
     G4Tubs* iron_platform_solid = new G4Tubs("iron_platform", 0, platform_radius, platform_half_height, 0., 2.*pi);
 
