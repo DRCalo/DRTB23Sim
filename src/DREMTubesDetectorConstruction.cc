@@ -584,7 +584,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     ******************************************************************/ 
 
     // Mother volume for platform and calo filled with air (defaultMaterial)
-    double platform_radius = 600*mm;    // Radius guessed for now
+    double platform_radius = 1200*mm;    // Radius guessed for now
     double air_volume_half_height = 500*mm; // More or less random, needs to be large enough to contain prototype
     G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume_solid", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
 
@@ -599,7 +599,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     // Horizontal rotation of the platform (including prototype)
     G4RotationMatrix rot_vol_rotmat2  = G4RotationMatrix();
-    rot_vol_rotmat2.rotateY(0*deg);
+    rot_vol_rotmat2.rotateY(90*deg);
 
     G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, G4ThreeVector());  
 
@@ -644,7 +644,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4RotationMatrix* unit_rotation = new G4RotationMatrix();
 
     // housing of calorimter
-    double housing_half_length = 163.5*cm/2;
+    double housing_half_length = caloZ + 10*cm; // some clearance in front and back
     double housing_half_width  = 18.0*cm/2;
     double housing_half_height = 15.4*cm/2;
 
@@ -663,20 +663,23 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
 
     // approximated support structure on which housing is placed
+    double support_half_length = 163.5*cm/2;
     double support_half_height = 10.0*cm/2;
 
-    G4Box* outer_support_solid = new G4Box("outer_support_solid", housing_half_width, support_half_height, housing_half_length);
+    G4Box* outer_support_solid = new G4Box("outer_support_solid", housing_half_width, support_half_height, support_half_length);
 
     double support_wall_thickness = 7.0*mm;
     double subtract_support_width = housing_half_width - support_wall_thickness;
     double subtract_support_height = support_half_height - support_wall_thickness;
-    G4Box* subtract_support = new G4Box("subtract_support", subtract_support_width, subtract_support_height, housing_half_length);
+    G4Box* subtract_support = new G4Box("subtract_support", subtract_support_width, subtract_support_height, support_half_length);
 
     G4SubtractionSolid* support_solid = new G4SubtractionSolid("support_solid", outer_support_solid, subtract_support);
 
 
     // Union of housing and support to only have to place one volume (easier for vertical rotation)
-    G4ThreeVector union_pos = G4ThreeVector(0, -(housing_half_height+support_half_height), 0);
+    double union_shift_y = -(housing_half_height+support_half_height);
+    double union_shift_z = support_half_length - housing_half_length;
+    G4ThreeVector union_pos = G4ThreeVector(0, union_shift_y, union_shift_z);
     G4UnionSolid* fullbox_solid = new G4UnionSolid("fullbox_solid", housing_solid, support_solid, unit_rotation, union_pos);
 
 
@@ -718,8 +721,9 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     G4RotationMatrix calo_rotmat = G4RotationMatrix();
     double fullbox_floor = housing_half_height - bot_wall_thickness;
-    double calo_shift = fullbox_floor - caloY;
-    G4ThreeVector calo_pos = G4ThreeVector(0, -calo_shift, 0);
+    double calo_shift_y = -(fullbox_floor - caloY);
+    double calo_shift_z = -(housing_half_length - caloZ - 2*cm);
+    G4ThreeVector calo_pos = G4ThreeVector(0, calo_shift_y, calo_shift_z);
 
     G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, calo_pos);    
     /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(calo_transfm,
