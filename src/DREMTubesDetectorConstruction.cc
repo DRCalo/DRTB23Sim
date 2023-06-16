@@ -641,15 +641,15 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     * Volumes for two bars the housing is placed on *
     *************************************************/
     double bar_half_length = 40.0*cm/2;
-    double bar_half_width  = 5.0*cm/2;
-    double bar_half_height = 10.0*cm/2;
+    double bar_half_width  = 4.5*cm/2;
+    double bar_half_height = 9.0*cm/2;
 
-    G4Box* outer_bar_solid = new G4Box("outer_bar_solid", bar_half_length, bar_half_width, bar_half_height);
+    G4Box* outer_bar_solid = new G4Box("outer_bar_solid", bar_half_length, bar_half_height, bar_half_width);
 
     double bar_wall_thickness = 10.0*mm;
     double subtract_bar_width = bar_half_width - bar_wall_thickness;
     double subtract_bar_height = bar_half_height - bar_wall_thickness;
-    G4Box* subtract_bar = new G4Box("subtract_bar", bar_half_length, subtract_bar_width, subtract_bar_height);
+    G4Box* subtract_bar = new G4Box("subtract_bar", bar_half_length, subtract_bar_height, subtract_bar_width);
 
     G4SubtractionSolid* bar_solid = new G4SubtractionSolid("bar_solid", outer_bar_solid, subtract_bar);
 
@@ -666,15 +666,15 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4RotationMatrix* unit_rotation = new G4RotationMatrix();
 
     // housing of calorimter
-    double housing_half_length = caloZ + 10*cm; // some clearance in front and back
+    double housing_half_length = 145.5*cm/2;
     double housing_half_width  = 18.0*cm/2;
-    double housing_half_height = 15.4*cm/2;
+    double housing_half_height = 15.0*cm/2;
 
     G4Box* outer_housing_solid = new G4Box("outer_housing_solid", housing_half_width, housing_half_height, housing_half_length);
 
-    double side_wall_thickness = 1.0*mm;
-    double top_wall_thickness  = 1.0*mm;
-    double bot_wall_thickness  = 14.0*mm;
+    double side_wall_thickness = 1.5*mm;
+    double top_wall_thickness  = 1.4*mm;
+    double bot_wall_thickness  = 10.0*mm;
     double subtract_box_half_width = housing_half_width - side_wall_thickness;
     double subtract_box_half_height = housing_half_height - (top_wall_thickness+bot_wall_thickness)/2;
 
@@ -702,7 +702,17 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     double union_shift_y = -(housing_half_height+support_half_height);
     double union_shift_z = support_half_length - housing_half_length;
     G4ThreeVector union_pos = G4ThreeVector(0, union_shift_y, union_shift_z);
-    G4UnionSolid* fullbox_solid = new G4UnionSolid("fullbox_solid", housing_solid, support_solid, unit_rotation, union_pos);
+    G4UnionSolid* fullbox_nobars = new G4UnionSolid("fullbox_nobars", housing_solid, support_solid, unit_rotation, union_pos);
+
+
+    // Union with front and back bar
+    double bar_pos_from_front = 16.0*cm;
+    double bar_y = -(housing_half_height+2*support_half_height+bar_half_height);
+    G4ThreeVector bar_front_pos = G4ThreeVector(0, bar_y, -(housing_half_length-bar_half_width-bar_pos_from_front));
+    G4UnionSolid* fullbox_frontbar = new G4UnionSolid("fullbox_frontbar", fullbox_nobars, bar_solid, unit_rotation, bar_front_pos);
+
+    G4ThreeVector bar_back_pos  = G4ThreeVector(0, bar_y, (2*support_half_length-housing_half_length-bar_half_width-53*cm));
+    G4UnionSolid* fullbox_solid = new G4UnionSolid("fullbox_solid", fullbox_frontbar, bar_solid, unit_rotation, bar_back_pos);
 
 
 
@@ -717,10 +727,10 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     double vert_rot = fVertRot ? -2.5*deg : 0.0*deg;
     fullbox_rotmat.rotateX(vert_rot);
 
-    double fullbox_half_Z = housing_half_length;
-    double fullbox_centre_Y = housing_half_height+ 2*support_half_height; // Centre of union volume based on first solid
+    double rotation_Z = housing_half_length; 
+    double fullbox_centre_Y = housing_half_height + 2*support_half_height + 2*bar_half_height - bar_pos_from_front*tan(-vert_rot); // Centre of union volume based on first solid
 
-    double fullbox_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*fullbox_half_Z + cos(vert_rot)*fullbox_centre_Y) - (2*bar_half_height);
+    double fullbox_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*rotation_Z + cos(vert_rot)*fullbox_centre_Y);
 
     G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
 
@@ -732,16 +742,14 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                 false,
                                                                 0,
                                                                 fCheckOverlaps);
-
+    /*
     // Placement of two bars the housing rests on
-    double bar_z = air_volume_half_height-2*platform_half_height-bar_half_height;
-    G4ThreeVector bar_front_pos = G4ThreeVector(0, -(housing_half_length-bar_half_width), bar_z);
     G4Transform3D bar_front_transfm = G4Transform3D(G4RotationMatrix(), bar_front_pos);
 
-    G4ThreeVector bar_back_pos  = G4ThreeVector(0, (2*support_half_length-housing_half_length-bar_half_width-8*cm), bar_z);
+    G4ThreeVector bar_back_pos  = G4ThreeVector(0, (2*support_half_length-housing_half_length-bar_half_width-53*cm), bar_z);
     G4Transform3D bar_back_transfm = G4Transform3D(G4RotationMatrix(), bar_back_pos);
 
-    /*G4VPhysicalVolume* bar_front_physical =*/ new G4PVPlacement(bar_front_transfm,
+    G4VPhysicalVolume* bar_front_physical = new G4PVPlacement(bar_front_transfm,
                                                                       bar_logical,
                                                                       "Bar",
                                                                       rotating_volume_logical,
@@ -749,13 +757,13 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                       1,
                                                                       fCheckOverlaps);
                                                                              
-    /*G4VPhysicalVolume* bar_back_physical =*/ new G4PVPlacement(bar_back_transfm,
+    /*G4VPhysicalVolume* bar_back_physical = new G4PVPlacement(bar_back_transfm,
                                                                       bar_logical,
                                                                       "Bar",
                                                                       rotating_volume_logical,
                                                                       false,
                                                                       0,
-                                                                      fCheckOverlaps);   
+                                                                      fCheckOverlaps);   */
     
 
 
