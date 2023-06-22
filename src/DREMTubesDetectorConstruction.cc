@@ -600,17 +600,18 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     // Horizontal rotation of the platform (including prototype)
     G4RotationMatrix rot_vol_rotmat2  = G4RotationMatrix();
-    rot_vol_rotmat2.rotateY(90*deg);
+    double horiz_rot = 10*deg;
+    rot_vol_rotmat2.rotateY(horiz_rot);
 
     G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, G4ThreeVector());  
 
-    /*G4VPhysicalVolume* rotating_volume_physical =*/ new G4PVPlacement(rot_vol_transfm,
+    /*G4VPhysicalVolume* rotating_volume_physical = new G4PVPlacement(rot_vol_transfm,
                                                                         rotating_volume_logical,
                                                                         "RotatingVolume",
                                                                         worldLV,
                                                                         false,
                                                                         0,
-                                                                        fCheckOverlaps);
+                                                                        fCheckOverlaps);*/
 
 
 
@@ -625,17 +626,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                  platformMaterial,
                                                                  "iron_platform_logical");
 
-    G4ThreeVector iron_plat_pos = G4ThreeVector(0, 0, air_volume_half_height-platform_half_height);
-    G4Transform3D iron_plat_transfm = G4Transform3D(G4RotationMatrix(), iron_plat_pos);
-
-    /*G4VPhysicalVolume* iron_platform_physical =*/ new G4PVPlacement(iron_plat_transfm,
-                                                                      iron_platform_logical,
-                                                                      "IronPlatform",
-                                                                      rotating_volume_logical,
-                                                                      false,
-                                                                      0,
-                                                                      fCheckOverlaps);
-                                                                    
+    // Placement of platform later utilising dimensions of calorimeter
     
     /************************************************
     * Volumes for two bars the housing is placed on *
@@ -721,27 +712,54 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                             aluminiumMaterial,
                                                             "fullbox_logical");
 
+    // Placement of iron platform because placement of calorimter should be relative to that
+    double iron_plat_Y = -(caloY + bot_wall_thickness + 2*support_half_height + 2*bar_half_height + platform_half_height);
+    G4ThreeVector iron_plat_pos = G4ThreeVector(0, iron_plat_Y, 0);
+    G4Transform3D iron_plat_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, iron_plat_pos);
+
+    /*G4VPhysicalVolume* iron_platform_physical =*/ new G4PVPlacement(iron_plat_transfm,
+                                                                      iron_platform_logical,
+                                                                      "IronPlatform",
+                                                                      worldLV,
+                                                                      false,
+                                                                      0,
+                                                                      fCheckOverlaps);
+
+
     // Inverse rotation of rotating_volume for calo to be pointed towards z 
-    G4RotationMatrix fullbox_rotmat = rot_vol_rotmat.inverse();
+    //G4RotationMatrix fullbox_rotmat = rot_vol_rotmat.inverse();
+    G4RotationMatrix fullbox_rotmat = G4RotationMatrix();
     // Vertical rotation of module
     double vert_rot = fVertRot ? -2.5*deg : 0.0*deg;
     fullbox_rotmat.rotateX(vert_rot);
 
+    
+    //double fullbox_centre_Y = housing_half_height + 2*support_half_height + 2*bar_half_height - bar_pos_from_front*tan(-vert_rot); // Centre of union volume based on first solid
+
+    //G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
+    double rotation_R = housing_half_length - caloZ - 2*cm; //distance between housing centre and calo centre
+    double fullbox_X = sin(horiz_rot)*rotation_R;
+
     double rotation_Z = housing_half_length; 
-    double fullbox_centre_Y = housing_half_height + 2*support_half_height + 2*bar_half_height - bar_pos_from_front*tan(-vert_rot); // Centre of union volume based on first solid
+    double fullbox_centre_Y = platform_half_height + 2*support_half_height + 2*bar_half_height + housing_half_height - bar_pos_from_front*tan(-vert_rot);
+    double fullbox_shift = (-sin(vert_rot)*rotation_Z + cos(vert_rot)*fullbox_centre_Y);
+    double fullbox_Y = iron_plat_Y + fullbox_shift;
 
-    double fullbox_shift = (air_volume_half_height-2*platform_half_height) - (-sin(vert_rot)*rotation_Z + cos(vert_rot)*fullbox_centre_Y);
+    double fullbox_Z = rotation_R*(2-cos(horiz_rot));
 
-    G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
+    G4ThreeVector fullbox_pos = G4ThreeVector(fullbox_X, fullbox_Y, fullbox_Z);
 
-    G4Transform3D fullbox_transfm = G4Transform3D(fullbox_rotmat, fullbox_pos); 
+    G4Transform3D fullbox_transfm = G4Transform3D(rot_vol_rotmat2*fullbox_rotmat, fullbox_pos); 
     /*G4VPhysicalVolume* fullbox_physical =*/ new G4PVPlacement(fullbox_transfm,
                                                                 fullbox_logical,
                                                                 "FullBox",
-                                                                rotating_volume_logical,
+                                                                worldLV,
                                                                 false,
                                                                 0,
                                                                 fCheckOverlaps);
+
+    
+                                                                    
     /*
     // Placement of two bars the housing rests on
     G4Transform3D bar_front_transfm = G4Transform3D(G4RotationMatrix(), bar_front_pos);
