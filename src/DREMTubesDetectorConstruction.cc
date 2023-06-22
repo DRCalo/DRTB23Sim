@@ -580,18 +580,11 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     position.setZ(0.);
     G4Transform3D transform = G4Transform3D(rotm,position); 
 
-    /*****************************************************************
-    * Volumes for implementing the rotating platform at the testbeam *
-    ******************************************************************/ 
+    /***********************************************************
+    * Volumes for the iron platform the prototype is placed on *
+    ************************************************************/
 
-    // Mother volume for platform and calo filled with air (defaultMaterial)
     double platform_radius = 1200*mm;    // Radius guessed for now
-    double air_volume_half_height = 500*mm; // More or less random, needs to be large enough to contain prototype
-    G4Tubs* rotating_volume_solid = new G4Tubs("rotating_volume_solid", 0, platform_radius, air_volume_half_height, 0., 2.*pi);
-
-    G4LogicalVolume* rotating_volume_logical = new G4LogicalVolume( rotating_volume_solid,
-                                                                    defaultMaterial,
-                                                                    "rotating_volume_logical");
 
     // Rotation to bring the G4Tubs into the right Orientation
     G4RotationMatrix rot_vol_rotmat  = G4RotationMatrix();
@@ -599,25 +592,9 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     rot_vol_rotmat.rotateX(rot_vol_xrot);
 
     // Horizontal rotation of the platform (including prototype)
-    G4RotationMatrix rot_vol_rotmat2  = G4RotationMatrix();
-    double horiz_rot = 10*deg;
-    rot_vol_rotmat2.rotateY(horiz_rot);
-
-    G4Transform3D rot_vol_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, G4ThreeVector());  
-
-    /*G4VPhysicalVolume* rotating_volume_physical = new G4PVPlacement(rot_vol_transfm,
-                                                                        rotating_volume_logical,
-                                                                        "RotatingVolume",
-                                                                        worldLV,
-                                                                        false,
-                                                                        0,
-                                                                        fCheckOverlaps);*/
-
-
-
-    /***********************************************************
-    * Volumes for the iron platform the prototype is placed on *
-    ************************************************************/
+    G4RotationMatrix platform_rotmat  = G4RotationMatrix();
+    double horiz_rot = 0*deg;
+    platform_rotmat.rotateY(horiz_rot);
     double platform_half_height = 25*mm;     // Height guessed for now
     G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
     G4Tubs* iron_platform_solid = new G4Tubs("iron_platform_solid", 0, platform_radius, platform_half_height, 0., 2.*pi);
@@ -643,10 +620,6 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4Box* subtract_bar = new G4Box("subtract_bar", bar_half_length, subtract_bar_height, subtract_bar_width);
 
     G4SubtractionSolid* bar_solid = new G4SubtractionSolid("bar_solid", outer_bar_solid, subtract_bar);
-
-    G4LogicalVolume* bar_logical = new G4LogicalVolume( bar_solid,
-                                                        aluminiumMaterial,
-                                                        "bar_logical");
 
     // Placement of bars is done with the housing. Some dimensions from the housing are needed
     
@@ -715,7 +688,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     // Placement of iron platform because placement of calorimter should be relative to that
     double iron_plat_Y = -(caloY + bot_wall_thickness + 2*support_half_height + 2*bar_half_height + platform_half_height);
     G4ThreeVector iron_plat_pos = G4ThreeVector(0, iron_plat_Y, 0);
-    G4Transform3D iron_plat_transfm = G4Transform3D(rot_vol_rotmat2*rot_vol_rotmat, iron_plat_pos);
+    G4Transform3D iron_plat_transfm = G4Transform3D(platform_rotmat*rot_vol_rotmat, iron_plat_pos);
 
     /*G4VPhysicalVolume* iron_platform_physical =*/ new G4PVPlacement(iron_plat_transfm,
                                                                       iron_platform_logical,
@@ -749,7 +722,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     G4ThreeVector fullbox_pos = G4ThreeVector(fullbox_X, fullbox_Y, fullbox_Z);
 
-    G4Transform3D fullbox_transfm = G4Transform3D(rot_vol_rotmat2*fullbox_rotmat, fullbox_pos); 
+    G4Transform3D fullbox_transfm = G4Transform3D(platform_rotmat*fullbox_rotmat, fullbox_pos); 
     /*G4VPhysicalVolume* fullbox_physical =*/ new G4PVPlacement(fullbox_transfm,
                                                                 fullbox_logical,
                                                                 "FullBox",
@@ -757,33 +730,6 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                 false,
                                                                 0,
                                                                 fCheckOverlaps);
-
-    
-                                                                    
-    /*
-    // Placement of two bars the housing rests on
-    G4Transform3D bar_front_transfm = G4Transform3D(G4RotationMatrix(), bar_front_pos);
-
-    G4ThreeVector bar_back_pos  = G4ThreeVector(0, (2*support_half_length-housing_half_length-bar_half_width-53*cm), bar_z);
-    G4Transform3D bar_back_transfm = G4Transform3D(G4RotationMatrix(), bar_back_pos);
-
-    G4VPhysicalVolume* bar_front_physical = new G4PVPlacement(bar_front_transfm,
-                                                                      bar_logical,
-                                                                      "Bar",
-                                                                      rotating_volume_logical,
-                                                                      false,
-                                                                      1,
-                                                                      fCheckOverlaps);
-                                                                             
-    /*G4VPhysicalVolume* bar_back_physical = new G4PVPlacement(bar_back_transfm,
-                                                                      bar_logical,
-                                                                      "Bar",
-                                                                      rotating_volume_logical,
-                                                                      false,
-                                                                      0,
-                                                                      fCheckOverlaps);   */
-    
-
 
 
     /**************
