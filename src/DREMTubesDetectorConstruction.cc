@@ -157,6 +157,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4Material* GlassMaterial = G4Material::GetMaterial("Glass");
     G4Material* CladCherMaterial = G4Material::GetMaterial("Fluorinated_Polymer");
     G4Material* aluminiumMaterial = nistManager->FindOrBuildMaterial("G4_Al");
+    G4Material* PVCMaterial = nistManager->FindOrBuildMaterial("G4_POLYVINYL_CHLORIDE");
 
     //--------------------------------------------------
     //Define Optical Properties
@@ -409,13 +410,12 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     //Preshower
     //
-/*
     auto PSSolid = new G4Box("Preshower", PSX/2., PSY/2., PSZ/2.);
 
     auto PSLV = new G4LogicalVolume(PSSolid, defaultMaterial, "Preshower");
 
     new G4PVPlacement( 0, 
-		       G4ThreeVector(0.,0.,-335.*cm),
+		       G4ThreeVector(0.,0.,-53.*cm - PSZ/2.),
 		       PSLV,
 		       "Preshower",
 		       worldLV,
@@ -457,7 +457,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4VisAttributes* PSScinVisAtt = new G4VisAttributes( G4Colour::Cyan() );
     PSScinVisAtt->SetVisibility(true);
     PSScinLV->SetVisAttributes( PSScinVisAtt );
-*/    
+ 
     //Absorber to calculate leakage
     //
     G4VSolid* leakageabsorber = new G4Sphere("leakageabsorber",                        
@@ -710,7 +710,8 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     //double fullbox_centre_Y = housing_half_height + 2*support_half_height + 2*bar_half_height - bar_pos_from_front*tan(-vert_rot); // Centre of union volume based on first solid
 
     //G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
-    double rotation_R = housing_half_length - caloZ - 2*cm; //distance between housing centre and calo centre
+    double plastic_cover_full_length = 20.0*mm;
+    double rotation_R = housing_half_length - caloZ - plastic_cover_full_length; //distance between housing centre and calo centre
     double fullbox_X = sin(horiz_rot)*rotation_R;
 
     double rotation_Z = housing_half_length; 
@@ -732,6 +733,41 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                 fCheckOverlaps);
 
 
+    /*****************
+     * Plastic Cover *
+     *****************/
+    double cover_half_length = plastic_cover_full_length/2;
+    double cover_half_width  = subtract_box_half_width;
+    double cover_half_height = subtract_box_half_height;
+    G4Box* cover_without_cutout_solid = new G4Box("cover_without_cutout_solid", cover_half_width, cover_half_height, cover_half_length);
+
+    double cutout_half_length = cover_half_length - 4.5*mm/2;
+    double cutout_half_width =  caloX;
+    double cutout_half_height = caloY;
+    G4Box* cutout_solid = new G4Box("cutout_solid", cutout_half_width, cutout_half_height, cutout_half_length);
+
+    G4ThreeVector cutout_pos = G4ThreeVector(0, cutout_half_height-cover_half_height, cutout_half_length-cover_half_length);
+    G4SubtractionSolid* cover_solid = new G4SubtractionSolid("cover_solid", cover_without_cutout_solid, cutout_solid, unit_rotation, cutout_pos);
+
+    
+
+    G4LogicalVolume* cover_logical = new G4LogicalVolume(cover_solid,
+                                                         PVCMaterial,
+                                                         "cover_logical");
+
+    
+    G4ThreeVector cover_pos = G4ThreeVector(0, subtract_box_pos.getY(), cover_half_length-housing_half_length);
+    G4Transform3D cover_transfm = G4Transform3D(*unit_rotation, cover_pos); 
+    /*G4VPhysicalVolume* cover_physical =*/ new G4PVPlacement(cover_transfm,
+                                                                cover_logical,
+                                                                "PlasticCover",
+                                                                fullbox_logical,
+                                                                false,
+                                                                0,
+                                                                fCheckOverlaps);
+
+
+
     /**************
     * Calorimeter *
     ***************/
@@ -739,7 +775,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     G4RotationMatrix calo_rotmat = G4RotationMatrix();
     double fullbox_floor = housing_half_height - bot_wall_thickness;
     double calo_shift_y = -(fullbox_floor - caloY);
-    double calo_shift_z = -(housing_half_length - caloZ - 2*cm);
+    double calo_shift_z = -(housing_half_length - caloZ - plastic_cover_full_length);
     G4ThreeVector calo_pos = G4ThreeVector(0, calo_shift_y, calo_shift_z);
 
     G4Transform3D calo_transfm = G4Transform3D(calo_rotmat, calo_pos);    
