@@ -634,7 +634,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     double housing_half_width  = 18.0*cm/2;
     double housing_half_height = 15.0*cm/2;
 
-    G4Box* outer_housing_solid = new G4Box("outer_housing_solid", housing_half_width, housing_half_height, housing_half_length);
+    G4Box* housing_solid = new G4Box("housing_solid", housing_half_width, housing_half_height, housing_half_length);
 
     double side_wall_thickness = 1.5*mm;
     double top_wall_thickness  = 1.4*mm;
@@ -642,10 +642,18 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     double subtract_box_half_width = housing_half_width - side_wall_thickness;
     double subtract_box_half_height = housing_half_height - (top_wall_thickness+bot_wall_thickness)/2;
 
+    // "air box" to hollow housing
     G4Box* subtract_box_solid = new G4Box("subtract_box", subtract_box_half_width, subtract_box_half_height, housing_half_length);
 
+    G4LogicalVolume* subtract_box_logical = new G4LogicalVolume(subtract_box_solid,
+                                                         defaultMaterial,
+                                                         "subtract_box_logical");
+
     G4ThreeVector subtract_box_pos = G4ThreeVector(0, (bot_wall_thickness-top_wall_thickness)/2, 0);
-    G4SubtractionSolid* housing_solid = new G4SubtractionSolid("housing_solid", outer_housing_solid, subtract_box_solid, unit_rotation, subtract_box_pos);
+    G4Transform3D subtract_box_transfm = G4Transform3D(*unit_rotation, subtract_box_pos); 
+    // Placement done later with full housing logical volume
+
+    //G4SubtractionSolid* housing_solid = new G4SubtractionSolid("housing_solid", outer_housing_solid, subtract_box_solid, unit_rotation, subtract_box_pos);
 
 
     // approximated support structure on which housing is placed
@@ -733,6 +741,16 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                                 fCheckOverlaps);
 
 
+    // Placement of hollowing air volume for housing
+    /*G4VPhysicalVolume* subtract_box_physical =*/ new G4PVPlacement(subtract_box_transfm,
+                                                                subtract_box_logical,
+                                                                "SubtractBox",
+                                                                fullbox_logical,
+                                                                false,
+                                                                0,
+                                                                fCheckOverlaps);
+
+
     /*****************
      * Plastic Cover *
      *****************/
@@ -756,12 +774,12 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
                                                          "cover_logical");
 
     
-    G4ThreeVector cover_pos = G4ThreeVector(0, subtract_box_pos.getY(), cover_half_length-housing_half_length);
+    G4ThreeVector cover_pos = G4ThreeVector(0, 0, cover_half_length-housing_half_length);
     G4Transform3D cover_transfm = G4Transform3D(*unit_rotation, cover_pos); 
     /*G4VPhysicalVolume* cover_physical =*/ new G4PVPlacement(cover_transfm,
                                                                 cover_logical,
                                                                 "PlasticCover",
-                                                                fullbox_logical,
+                                                                subtract_box_logical,
                                                                 false,
                                                                 0,
                                                                 fCheckOverlaps);
@@ -774,7 +792,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
     G4RotationMatrix calo_rotmat = G4RotationMatrix();
     double fullbox_floor = housing_half_height - bot_wall_thickness;
-    double calo_shift_y = -(fullbox_floor - caloY);
+    double calo_shift_y = -(subtract_box_half_height - caloY);
     double calo_shift_z = -(housing_half_length - caloZ - plastic_cover_full_length);
     G4ThreeVector calo_pos = G4ThreeVector(0, calo_shift_y, calo_shift_z);
 
@@ -782,7 +800,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
     /*G4VPhysicalVolume* CalorimeterPV =*/ new G4PVPlacement(calo_transfm,
                                                          CalorimeterLV,
                                                          "Calorimeter",
-                                                         fullbox_logical,
+                                                         subtract_box_logical,
                                                          false,
                                                          0,
                                                          fCheckOverlaps);
