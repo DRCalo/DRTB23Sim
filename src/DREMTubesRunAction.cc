@@ -44,7 +44,7 @@ DREMTubesRunAction::DREMTubesRunAction( DREMTubesEventAction* eventAction )
 
     //Define ntuple structure
     //
-    analysisManager->CreateNtuple("DREMTubesout", "DREMTubesoutput");
+    analysisManager->CreateNtuple("DRTB23Simout", "simoutput");
     analysisManager->CreateNtupleDColumn("EnergyScin");                     //0
     analysisManager->CreateNtupleDColumn("EnergyCher");                     //1
     analysisManager->CreateNtupleDColumn("NofCherDet");                     //2
@@ -87,7 +87,7 @@ void DREMTubesRunAction::BeginOfRunAction( const G4Run* Run )  {
     //
     auto analysisManager = G4AnalysisManager::Instance();
     std::string runnumber = std::to_string( Run->GetRunID() );
-    G4String outputfile = "DREMTubesout_Run"+runnumber;
+    G4String outputfile = "DRTB23Sim_Run"+runnumber;
     analysisManager->OpenFile( outputfile );
 
 }
