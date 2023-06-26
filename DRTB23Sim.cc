@@ -8,9 +8,9 @@
 
 // Includers from project files
 //
-#include "DREMTubesDetectorConstruction.hh"
-#include "DREMTubesActionInitialization.hh"
-#include "DREMTubesPhysicsList.hh"
+#include "DRTB23SimDetectorConstruction.hh"
+#include "DRTB23SimActionInitialization.hh"
+#include "DRTB23SimPhysicsList.hh"
 
 // Includers from Geant4
 //
@@ -30,8 +30,8 @@
 //
 namespace PrintUsageError {
     void UsageError() {
-    G4cerr << "->DREMTubes usage: " << G4endl;
-    G4cerr << "DREMTubes [-m macro ] [-u UIsession] [-t nThreads] [-pl PhysicsList]" 
+    G4cerr << "->DRTB23Sim usage: " << G4endl;
+    G4cerr << "DRTB23Sim [-m macro ] [-u UIsession] [-t nThreads] [-pl PhysicsList]" 
         << G4endl;
     G4cerr << "          [-opt FullOptic] [-vert VerticalRotation]" << G4endl;
     }
@@ -80,11 +80,11 @@ int main(int argc, char** argv) {
 
     //Print if FullOptic option is on
     //
-    if (FullOptic){ G4cout<<"DREMTubes-> Run with full optical description"<<G4endl; }
+    if (FullOptic){ G4cout<<"DRTB23Sim-> Run with full optical description"<<G4endl; }
 
     //Print if VertRot option is on
     //
-    if (VertRot){ G4cout<<"DREMTubes-> Run with vertical rotation of calorimeter"<<G4endl; }
+    if (VertRot){ G4cout<<"DRTB23Sim-> Run with vertical rotation of calorimeter"<<G4endl; }
 
   
     // Detect interactive mode (if no macro provided) and define UI session
@@ -107,12 +107,12 @@ int main(int argc, char** argv) {
 
     // Set mandatory initialization classes
     //
-    auto DetConstruction = new DREMTubesDetectorConstruction(VertRot);
+    auto DetConstruction = new DRTB23SimDetectorConstruction(VertRot);
     runManager->SetUserInitialization(DetConstruction);
 
-    runManager->SetUserInitialization(new DREMTubesPhysicsList(custom_pl, FullOptic ));
+    runManager->SetUserInitialization(new DRTB23SimPhysicsList(custom_pl, FullOptic ));
   
-    auto actionInitialization = new DREMTubesActionInitialization( DetConstruction, FullOptic );
+    auto actionInitialization = new DRTB23SimActionInitialization( DetConstruction, FullOptic );
     runManager->SetUserInitialization(actionInitialization);
   
     // Initialize visualization
