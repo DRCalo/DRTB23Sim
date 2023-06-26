@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesActionInitialization.hh
-// \brief: Definition of DREMTubesActionInitialization class
+// \file DRTB23SimActionInitialization.hh
+// \brief: Definition of DRTB23SimActionInitialization class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesActionInitialization_h
-#define DREMTubesActionInitialization_h 1
+#ifndef DRTB23SimActionInitialization_h
+#define DRTB23SimActionInitialization_h 1
 
 //Includers from Geant4
 //
@@ -22,15 +22,15 @@
 
 //Forward declaration
 //
-class DREMTubesDetectorConstruction;
+class DRTB23SimDetectorConstruction;
 
-class DREMTubesActionInitialization : public G4VUserActionInitialization {
+class DRTB23SimActionInitialization : public G4VUserActionInitialization {
     
     public:
         //Constructor
         //
-        DREMTubesActionInitialization(DREMTubesDetectorConstruction*, const G4bool FullOptic );
-        virtual ~DREMTubesActionInitialization();
+        DRTB23SimActionInitialization(DRTB23SimDetectorConstruction*, const G4bool FullOptic );
+        virtual ~DRTB23SimActionInitialization();
 
         virtual void BuildForMaster() const;
         virtual void Build() const;
@@ -39,7 +39,7 @@ class DREMTubesActionInitialization : public G4VUserActionInitialization {
 
         G4bool fFullOptic;
 
-	DREMTubesDetectorConstruction* fDetConstruction;
+	DRTB23SimDetectorConstruction* fDetConstruction;
 
 };
 

@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesOpticalPhysics.hh 
-// \brief: Definition of DREMTubesOpticalPhysics class
+// \file DRTB23SimOpticalPhysics.hh 
+// \brief: Definition of DRTB23SimOpticalPhysics class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************//
 
 // Prevent including header multiple times
 //
-#ifndef DREMTubesOpticalPhysics_h
-#define DREMTubesOpticalPhysics_h 1
+#ifndef DRTB23SimOpticalPhysics_h
+#define DRTB23SimOpticalPhysics_h 1
 
 // Includers from Geant4
 //
@@ -22,15 +22,15 @@
 #include "G4OpBoundaryProcess.hh"
 #include "G4VPhysicsConstructor.hh"
 
-class DREMTubesOpticalPhysics : public G4VPhysicsConstructor {
+class DRTB23SimOpticalPhysics : public G4VPhysicsConstructor {
     
     public: 
         // Constructor
         //
-        DREMTubesOpticalPhysics( const G4bool FullOptic, G4bool toggle=true);
+        DRTB23SimOpticalPhysics( const G4bool FullOptic, G4bool toggle=true);
         // Deconstructor
         //
-        virtual ~DREMTubesOpticalPhysics();
+        virtual ~DRTB23SimOpticalPhysics();
     
         virtual void ConstructParticle();
         virtual void ConstructProcess();

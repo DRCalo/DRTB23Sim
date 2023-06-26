@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesEventAction.hh
-// \brief: Definition of DREMTubesEventAction class
+// \file DRTB23SimEventAction.hh
+// \brief: Definition of DRTB23SimEventAction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesEventAction_h
-#define DREMTubesEventAction_h 1
+#ifndef DRTB23SimEventAction_h
+#define DRTB23SimEventAction_h 1
 
 //Includers from Geant4
 //
@@ -19,15 +19,15 @@
 //
 #include <vector>
 
-class DREMTubesEventAction : public G4UserEventAction {
+class DRTB23SimEventAction : public G4UserEventAction {
     
     public:
         //Constructor
         //
-        DREMTubesEventAction();
+        DRTB23SimEventAction();
         //De-constructor
         //
-        virtual ~DREMTubesEventAction();
+        virtual ~DRTB23SimEventAction();
 
         virtual void  BeginOfEventAction(const G4Event* event);
         virtual void    EndOfEventAction(const G4Event* event);
@@ -99,56 +99,56 @@ class DREMTubesEventAction : public G4UserEventAction {
 
 //Inline functions definition
 //
-inline void DREMTubesEventAction::AddEscapedEnergy(G4double escapedenergy){
+inline void DRTB23SimEventAction::AddEscapedEnergy(G4double escapedenergy){
     EscapedEnergy += escapedenergy;
 }
 
-inline void DREMTubesEventAction::SavePrimaryPDGID(G4int pdgid){
+inline void DRTB23SimEventAction::SavePrimaryPDGID(G4int pdgid){
     PrimaryPDGID = pdgid;
 }
-inline void DREMTubesEventAction::SavePrimaryXY(G4double x, G4double y){
+inline void DRTB23SimEventAction::SavePrimaryXY(G4double x, G4double y){
     PrimaryX = x;
     PrimaryY = y;
 }
 
 
-inline void DREMTubesEventAction::SavePrimaryEnergy(G4double primaryparticleenergy){
+inline void DRTB23SimEventAction::SavePrimaryEnergy(G4double primaryparticleenergy){
     PrimaryParticleEnergy = primaryparticleenergy;
 }
 
-inline void DREMTubesEventAction::AddVectorScin(G4double de, G4int fiber) {
+inline void DRTB23SimEventAction::AddVectorScin(G4double de, G4int fiber) {
     VectorSignals.at(fiber) += de;
 }
 
-inline void DREMTubesEventAction::AddVectorCher(G4int fiber, G4int n) {
+inline void DRTB23SimEventAction::AddVectorCher(G4int fiber, G4int n) {
     VectorSignalsCher.at(fiber) = VectorSignalsCher.at(fiber) + n;
 }
 
-inline void DREMTubesEventAction::AddVecTowerE(G4int TowerID, G4double de) {
+inline void DRTB23SimEventAction::AddVecTowerE(G4int TowerID, G4double de) {
     VecTowerE.at(TowerID) += de;
 }
 
-inline void DREMTubesEventAction::AddVecSPMT(G4int PMTID, G4double de) {
+inline void DRTB23SimEventAction::AddVecSPMT(G4int PMTID, G4double de) {
     VecSPMT.at(PMTID) += de;
 }
 
-inline void DREMTubesEventAction::AddVecCPMT(G4int PMTID, G4double de) {
+inline void DRTB23SimEventAction::AddVecCPMT(G4int PMTID, G4double de) {
     VecCPMT.at(PMTID) += de;
 }
 
-inline void DREMTubesEventAction::AddScin(G4double de){
+inline void DRTB23SimEventAction::AddScin(G4double de){
     EnergyScin += de;
 }
 
-inline void DREMTubesEventAction::AddCher(G4double de){
+inline void DRTB23SimEventAction::AddCher(G4double de){
     EnergyCher += de;
 }
 
-inline void DREMTubesEventAction::Addenergy(G4double de){
+inline void DRTB23SimEventAction::Addenergy(G4double de){
     EnergyTot += de;
 }
 
-inline void DREMTubesEventAction::AddPSEnergy(G4double de){
+inline void DRTB23SimEventAction::AddPSEnergy(G4double de){
     PSEnergy += de;
 }
 #endif

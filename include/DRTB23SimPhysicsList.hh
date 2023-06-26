@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesPhysicsList.hh
-// \brief: Definition of DREMTubesPhysicsList class
+// \file DRTB23SimPhysicsList.hh
+// \brief: Definition of DRTB23SimPhysicsList class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesPhysicsList_h
-#define DREMTubesPhysicsList_h 1
+#ifndef DRTB23SimPhysicsList_h
+#define DRTB23SimPhysicsList_h 1
 
 //Includers from Geant4
 //
@@ -16,19 +16,19 @@
 
 //Includers from project files
 //
-#include "DREMTubesOpticalPhysics.hh"
+#include "DRTB23SimOpticalPhysics.hh"
 
-class DREMTubesPhysicsList : public G4VModularPhysicsList{
+class DRTB23SimPhysicsList : public G4VModularPhysicsList{
     
     public:
         //Constructor
         //
-        DREMTubesPhysicsList(G4String, const G4bool FullOptic );
+        DRTB23SimPhysicsList(G4String, const G4bool FullOptic );
         //De-constructor
         //
-        virtual ~DREMTubesPhysicsList();
+        virtual ~DRTB23SimPhysicsList();
     
-        DREMTubesOpticalPhysics* OpPhysics;
+        DRTB23SimOpticalPhysics* OpPhysics;
     
         G4bool AbsorptionOn;
     
