@@ -1,7 +1,7 @@
 //**************************************************
-// \file DREMTubesSteppingAction.cc
+// \file DRTB23SimSteppingAction.cc
 // \brief: Implementation of 
-//         DREMTubesSteppingAction.cc
+//         DRTB23SimSteppingAction.cc
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
 //          @lopezzot
 // \start date: 7 July 2021
@@ -9,9 +9,9 @@
 
 //Includers from project files
 //
-#include "DREMTubesSteppingAction.hh"
-#include "DREMTubesEventAction.hh"
-#include "DREMTubesDetectorConstruction.hh"
+#include "DRTB23SimSteppingAction.hh"
+#include "DRTB23SimEventAction.hh"
+#include "DRTB23SimDetectorConstruction.hh"
 
 //Includers from Geant4
 //
@@ -23,25 +23,25 @@
 
 //Define constructor
 //
-DREMTubesSteppingAction::DREMTubesSteppingAction( DREMTubesEventAction* eventAction,
-						  const DREMTubesDetectorConstruction* detConstruction,
+DRTB23SimSteppingAction::DRTB23SimSteppingAction( DRTB23SimEventAction* eventAction,
+						  const DRTB23SimDetectorConstruction* detConstruction,
                                                   const G4bool FullOptic)
     : G4UserSteppingAction(),
     fEventAction(eventAction),
     fDetConstruction(detConstruction),
     fFullOptic(FullOptic) {
 		
-        fSignalHelper = DREMTubesSignalHelper::Instance(); 
+        fSignalHelper = DRTB23SimSignalHelper::Instance(); 
 		
 }
 
 //Define de-constructor
 //
-DREMTubesSteppingAction::~DREMTubesSteppingAction() {}
+DRTB23SimSteppingAction::~DRTB23SimSteppingAction() {}
 
 //Define UserSteppingAction() method
 //
-void DREMTubesSteppingAction::UserSteppingAction( const G4Step* step ) {
+void DRTB23SimSteppingAction::UserSteppingAction( const G4Step* step ) {
     
     //Save auxiliary information
     //
@@ -65,7 +65,7 @@ void DREMTubesSteppingAction::UserSteppingAction( const G4Step* step ) {
 
 //Define AuxSteppingAction() method
 //
-void DREMTubesSteppingAction::AuxSteppingAction( const G4Step* step ) {
+void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
 
     // Get step info
     //
@@ -119,7 +119,7 @@ void DREMTubesSteppingAction::AuxSteppingAction( const G4Step* step ) {
 /*
 //Define SlowSteppingAction() method
 //
-void DREMTubesSteppingAction::SlowSteppingAction( const G4Step* step ){
+void DRTB23SimSteppingAction::SlowSteppingAction( const G4Step* step ){
     
     //Random seed and random number generator
     //
@@ -210,7 +210,7 @@ void DREMTubesSteppingAction::SlowSteppingAction( const G4Step* step ){
 */
 //Define FastSteppingAction() method
 //
-void DREMTubesSteppingAction::FastSteppingAction( const G4Step* step ) { 
+void DRTB23SimSteppingAction::FastSteppingAction( const G4Step* step ) { 
 		
     // Get step info
     //

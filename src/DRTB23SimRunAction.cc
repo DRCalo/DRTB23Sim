@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesRunAction.cc 
-// \brief: Implementation of DREMTubesRunAction class 
+// \file DRTB23SimRunAction.cc 
+// \brief: Implementation of DRTB23SimRunAction class 
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Includers from project files
 //
-#include "DREMTubesRunAction.hh"
-#include "DREMTubesEventAction.hh"
+#include "DRTB23SimRunAction.hh"
+#include "DRTB23SimEventAction.hh"
 
 //Includers from Geant4
 //
@@ -24,7 +24,7 @@
 
 //Define constructor
 //
-DREMTubesRunAction::DREMTubesRunAction( DREMTubesEventAction* eventAction )
+DRTB23SimRunAction::DRTB23SimRunAction( DRTB23SimEventAction* eventAction )
     : G4UserRunAction(),
       fEventAction( eventAction ){ 
   
@@ -40,7 +40,7 @@ DREMTubesRunAction::DREMTubesRunAction( DREMTubesEventAction* eventAction )
 
     //Using ROOT as analysisManager type, print it
     //
-    G4cout << "DREMTubes-> Using " << analysisManager->GetType() << G4endl;
+    G4cout << "DRTB23Sim-> Using " << analysisManager->GetType() << G4endl;
 
     //Define ntuple structure
     //
@@ -67,7 +67,7 @@ DREMTubesRunAction::DREMTubesRunAction( DREMTubesEventAction* eventAction )
 
 //Define de-constructor
 //
-DREMTubesRunAction::~DREMTubesRunAction(){
+DRTB23SimRunAction::~DRTB23SimRunAction(){
    
     //Delete only instance of G4AnalysisManager
     //
@@ -77,7 +77,7 @@ DREMTubesRunAction::~DREMTubesRunAction(){
 
 //Define BeginOfRunAction() and EndOfRunAction() methods
 //
-void DREMTubesRunAction::BeginOfRunAction( const G4Run* Run )  { 
+void DRTB23SimRunAction::BeginOfRunAction( const G4Run* Run )  { 
     
     //Save random seeds (optional)
     //
@@ -92,7 +92,7 @@ void DREMTubesRunAction::BeginOfRunAction( const G4Run* Run )  {
 
 }
 
-void DREMTubesRunAction::EndOfRunAction( const G4Run* ) {
+void DRTB23SimRunAction::EndOfRunAction( const G4Run* ) {
   
     auto analysisManager = G4AnalysisManager::Instance();
 

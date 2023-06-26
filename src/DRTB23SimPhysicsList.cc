@@ -1,13 +1,13 @@
 //**************************************************
-// \file DREMTubesPhysicsList.cc
+// \file DRTB23SimPhysicsList.cc
 // \brief: Implementation of ATLTBHECDetectorConstruction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Includers from prject files
-#include "DREMTubesPhysicsList.hh"
-#include "DREMTubesOpticalPhysics.hh"
+#include "DRTB23SimPhysicsList.hh"
+#include "DRTB23SimOpticalPhysics.hh"
 
 //Includers from Geant4
 //
@@ -23,7 +23,7 @@
 
 //Define constructor
 //
-DREMTubesPhysicsList::DREMTubesPhysicsList(G4String physName, const G4bool FullOptic )
+DRTB23SimPhysicsList::DRTB23SimPhysicsList(G4String physName, const G4bool FullOptic )
     :G4VModularPhysicsList(),
     fFullOptic( FullOptic ) {
     
@@ -51,7 +51,7 @@ DREMTubesPhysicsList::DREMTubesPhysicsList(G4String physName, const G4bool FullO
         
         if (elem == NULL) break;
         
-        G4cout << "DREMTubes->RegisterPhysics: " << elem->GetPhysicsName() << G4endl;
+        G4cout << "DRTB23Sim->RegisterPhysics: " << elem->GetPhysicsName() << G4endl;
         
         RegisterPhysics(elem);
     }
@@ -60,12 +60,12 @@ DREMTubesPhysicsList::DREMTubesPhysicsList(G4String physName, const G4bool FullO
     // Turn on and off the absorption of optical photons in materials
     // 
     AbsorptionOn = true;
-    RegisterPhysics( OpPhysics = new DREMTubesOpticalPhysics(fFullOptic, AbsorptionOn) );
+    RegisterPhysics( OpPhysics = new DRTB23SimOpticalPhysics(fFullOptic, AbsorptionOn) );
     
 }
 
 //Define de-constructor
 //
-DREMTubesPhysicsList::~DREMTubesPhysicsList(){}
+DRTB23SimPhysicsList::~DRTB23SimPhysicsList(){}
 
 //**************************************************

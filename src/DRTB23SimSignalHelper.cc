@@ -1,6 +1,6 @@
 //**************************************************
-// \file DREMTubesSignalHelper.cc
-// \brief: Implementation of DREMTubesSignalHelper
+// \file DRTB23SimSignalHelper.cc
+// \brief: Implementation of DRTB23SimSignalHelper
 //         class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
 //          @lopezzot
@@ -9,29 +9,29 @@
 
 //Includers from project files
 //
-#include "DREMTubesSignalHelper.hh"
+#include "DRTB23SimSignalHelper.hh"
 
 //Includers from Geant4
 #include "G4Poisson.hh"
 
-DREMTubesSignalHelper* DREMTubesSignalHelper::instance = 0;
+DRTB23SimSignalHelper* DRTB23SimSignalHelper::instance = 0;
 
 //Define (private) constructor (singleton)
 //
-DREMTubesSignalHelper::DREMTubesSignalHelper(){}
+DRTB23SimSignalHelper::DRTB23SimSignalHelper(){}
 
 //Define Instance() method
 //
-DREMTubesSignalHelper* DREMTubesSignalHelper::Instance(){
+DRTB23SimSignalHelper* DRTB23SimSignalHelper::Instance(){
     if (instance==0){
-        instance = new DREMTubesSignalHelper;
+        instance = new DRTB23SimSignalHelper;
     }
-    return DREMTubesSignalHelper::instance;
+    return DRTB23SimSignalHelper::instance;
 }
 
 //Define ApplyBirks() method
 //
-G4double DREMTubesSignalHelper::ApplyBirks( const G4double& de, const G4double& steplength ) {
+G4double DRTB23SimSignalHelper::ApplyBirks( const G4double& de, const G4double& steplength ) {
 		
     const G4double k_B = 0.126; //Birks constant
     return (de/steplength) / ( 1+k_B*(de/steplength) ) * steplength;
@@ -40,7 +40,7 @@ G4double DREMTubesSignalHelper::ApplyBirks( const G4double& de, const G4double& 
 
 //Define SmearSSignal() method
 //
-G4int DREMTubesSignalHelper::SmearSSignal( const G4double& satde ) {
+G4int DRTB23SimSignalHelper::SmearSSignal( const G4double& satde ) {
 		
     return G4Poisson(satde*9.5);
 		
@@ -48,7 +48,7 @@ G4int DREMTubesSignalHelper::SmearSSignal( const G4double& satde ) {
 
 //Define SmearCSignal() method
 //
-G4int DREMTubesSignalHelper::SmearCSignal( ){
+G4int DRTB23SimSignalHelper::SmearCSignal( ){
 		
     return G4Poisson(0.153);
 
