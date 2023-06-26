@@ -1,6 +1,6 @@
 #include "G4SystemOfUnits.hh"
 // TB2021 
-/*
+
     const G4int NofmodulesX = 3; 
     const G4int NofmodulesY = 3;
     const G4int modflag[9]={3,2,1,5,0,4,8,7,6};
@@ -11,8 +11,8 @@
     const G4int NoModulesActive=9;
     const G4double moduleZ = (1000.)*mm;
     const G4bool irot=false;
-*/
 
+/*
     const G4int NofmodulesX = 24; 
     const G4int NofmodulesY = 5;
     const G4int modflag[120]={-1,-1,-1,-1,-1,-1,-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1,-1,
@@ -27,5 +27,5 @@
     const G4int NoModulesActive=84;
     const G4double moduleZ = (2500.)*mm;
     const G4bool irot=true;
-
+*/
     const G4int NoFibersTower=NofFiberscolumn*NofFibersrow/2;
