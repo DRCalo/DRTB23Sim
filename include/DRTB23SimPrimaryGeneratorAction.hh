@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesPrimaryGeneratorAction.hh
-// \brief: Definition of DREMTubesPrimaryGeneratorAction class
+// \file DRTB23SimPrimaryGeneratorAction.hh
+// \brief: Definition of DRTB23SimPrimaryGeneratorAction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including headers multiple times
 //
-#ifndef DREMTubesPrimaryGeneratorAction_h
-#define DREMTubesPrimaryGeneratorAction_h 1
+#ifndef DRTB23SimPrimaryGeneratorAction_h
+#define DRTB23SimPrimaryGeneratorAction_h 1
 
 //Includers from Geant4
 //
@@ -19,15 +19,15 @@ class G4GeneralParticleSource;
 //class G4ParticleGun;         //you can switch to G4ParticleGun
 class G4Event;
 
-class DREMTubesPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+class DRTB23SimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     
     public:
         //Constructor()
         //
-        DREMTubesPrimaryGeneratorAction();    
+        DRTB23SimPrimaryGeneratorAction();    
         //De-constructor()
         //
-        virtual ~DREMTubesPrimaryGeneratorAction();
+        virtual ~DRTB23SimPrimaryGeneratorAction();
 
         virtual void GeneratePrimaries(G4Event* event);
   

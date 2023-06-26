@@ -1,6 +1,6 @@
 //**************************************************
-// \file DREMTubesOpticalPhysics.cc 
-// \brief: Implementation of DREMTubesOpticalPhysics class
+// \file DRTB23SimOpticalPhysics.cc 
+// \brief: Implementation of DRTB23SimOpticalPhysics class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
@@ -14,11 +14,11 @@
 
 // Includers from project files
 //
-#include "DREMTubesOpticalPhysics.hh"
+#include "DRTB23SimOpticalPhysics.hh"
 
 // Constructor
 //
-DREMTubesOpticalPhysics::DREMTubesOpticalPhysics(const G4bool FullOptic, G4bool toggle) 
+DRTB23SimOpticalPhysics::DRTB23SimOpticalPhysics(const G4bool FullOptic, G4bool toggle) 
     : G4VPhysicsConstructor("Optical"),
       fFullOptic( FullOptic ) {
     
@@ -37,18 +37,18 @@ DREMTubesOpticalPhysics::DREMTubesOpticalPhysics(const G4bool FullOptic, G4bool 
 
 // De-constructor
 //
-DREMTubesOpticalPhysics::~DREMTubesOpticalPhysics() {}
+DRTB23SimOpticalPhysics::~DRTB23SimOpticalPhysics() {}
 
 
-void DREMTubesOpticalPhysics::ConstructParticle() {
+void DRTB23SimOpticalPhysics::ConstructParticle() {
     
     G4OpticalPhoton::OpticalPhotonDefinition();
 
 }
 
-void DREMTubesOpticalPhysics::ConstructProcess() {
+void DRTB23SimOpticalPhysics::ConstructProcess() {
     
-    G4cout<<"DREMTubesOpticalPhysics:: Add Optical Physics Processes"<<G4endl;
+    G4cout<<"DRTB23SimOpticalPhysics:: Add Optical Physics Processes"<<G4endl;
    
     // Initialize optical processes
     //
@@ -85,7 +85,7 @@ void DREMTubesOpticalPhysics::ConstructProcess() {
     // if does not exist rais a fatal exception
     //
     if (!pManager) {
-        G4cout<<"DREMTubes->Optical Photon without a Process Manager"<<G4endl;
+        G4cout<<"DRTB23Sim->Optical Photon without a Process Manager"<<G4endl;
         G4Exception("OpticalPhysics::ConstructProcess()","",
                     FatalException,"Optical Photon without a Process Manager");
     }
@@ -115,7 +115,7 @@ void DREMTubesOpticalPhysics::ConstructProcess() {
         // If does not exist raise a fatal exception
         //
         if (!pManager) {
-            G4cout<< "DREMTubes->Particle " <<
+            G4cout<< "DRTB23Sim->Particle " <<
                 particleName << "without a Process Manager";
             G4Exception("OpticalPhysics::ConstructProcess()","",
                         FatalException,"No Process Manager for particle");

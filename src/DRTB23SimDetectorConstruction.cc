@@ -1,7 +1,7 @@
 //**************************************************
-// \file DREMTubesDetectorConstruction.cc
+// \file DRTB23SimDetectorConstruction.cc
 // \brief: Implementation of 
-//         DREMTubesDetectorConstruction class
+//         DRTB23SimDetectorConstruction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
 //          @lopezzot
 // \start date: 7 July 2021
@@ -9,7 +9,7 @@
 
 //Includers from project files
 //
-#include "DREMTubesDetectorConstruction.hh"
+#include "DRTB23SimDetectorConstruction.hh"
 
 //Includers from Geant4
 //
@@ -52,7 +52,7 @@ const G4double sq3m1=sq3/3.;
 
 //Constructor
 //
-DREMTubesDetectorConstruction::DREMTubesDetectorConstruction(const G4bool VertRot)
+DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction(const G4bool VertRot)
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
 		fLeakCntPV(nullptr),
@@ -62,16 +62,16 @@ DREMTubesDetectorConstruction::DREMTubesDetectorConstruction(const G4bool VertRo
 
 //De-constructor
 //
-DREMTubesDetectorConstruction::~DREMTubesDetectorConstruction() {}
+DRTB23SimDetectorConstruction::~DRTB23SimDetectorConstruction() {}
 
 //Define Construct() method
-G4VPhysicalVolume* DREMTubesDetectorConstruction::Construct() {
+G4VPhysicalVolume* DRTB23SimDetectorConstruction::Construct() {
   
     // Define volumes
     return DefineVolumes();
 }
 
-G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
+G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
     //--------------------------------------------------
     //Define Elements, Mixtures and Materials
@@ -1089,7 +1089,7 @@ G4VPhysicalVolume* DREMTubesDetectorConstruction::DefineVolumes() {
 
 // Define constructscinfiber method()
 //
-G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolerance,
+G4LogicalVolume* DRTB23SimDetectorConstruction::constructscinfiber(double tolerance,
     G4double tuberadius, G4double fiberZ, G4Material* absorberMaterial, 
     G4double coreradius, G4double coreZ, G4Material* ScinMaterial, 
     G4double claddingradiusmin, G4double claddingradiusmax, G4double claddingZ,
@@ -1195,7 +1195,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructscinfiber(double tolera
 
 // Define constructcherfiber() method
 //
-G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolerance,
+G4LogicalVolume* DRTB23SimDetectorConstruction::constructcherfiber(double tolerance,
     G4double tuberadius, G4double fiberZ, G4Material* absorberMaterial,
     G4double coreradius, G4double coreZ, G4Material* CherMaterial, 
     G4double claddingradiusmin, G4double claddingradiusmax, G4double claddingZ, 
@@ -1296,7 +1296,7 @@ G4LogicalVolume* DREMTubesDetectorConstruction::constructcherfiber(double tolera
 //
 //   method to define polygonal contour of module to extrude
 //
-std::vector<G4TwoVector> DREMTubesDetectorConstruction::calcmod(double radius, int nrow, int ncol) {
+std::vector<G4TwoVector> DRTB23SimDetectorConstruction::calcmod(double radius, int nrow, int ncol) {
    G4double dxlr=radius;
    G4double dtubeY=sq3*radius;
    G4double moduleX = ncol*2.*radius+radius;

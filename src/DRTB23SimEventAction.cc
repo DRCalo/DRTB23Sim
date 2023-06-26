@@ -1,6 +1,6 @@
 //**************************************************
-// \file DREMTubesEventAction.cc
-// \brief: Implementation of DREMTubesEventAction 
+// \file DRTB23SimEventAction.cc
+// \brief: Implementation of DRTB23SimEventAction 
 //         class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
 //          @lopezzot
@@ -9,9 +9,9 @@
 
 //Includers from project files
 //
-#include "DREMTubesEventAction.hh"
-#include "DREMTubesRunAction.hh"
-#include "DREMTubesDetectorConstruction.hh"
+#include "DRTB23SimEventAction.hh"
+#include "DRTB23SimRunAction.hh"
+#include "DRTB23SimDetectorConstruction.hh"
 //Includers from Geant4
 //
 #include "g4root.hh"
@@ -27,7 +27,7 @@
 
 //Define constructor
 //
-DREMTubesEventAction::DREMTubesEventAction()
+DRTB23SimEventAction::DRTB23SimEventAction()
     : G4UserEventAction(),
     EnergyScin(0.),
     EnergyCher(0.),
@@ -49,11 +49,11 @@ DREMTubesEventAction::DREMTubesEventAction()
 
 //Define de-constructor
 //
-DREMTubesEventAction::~DREMTubesEventAction() {}
+DRTB23SimEventAction::~DRTB23SimEventAction() {}
 
 //Define BeginOfEventAction() and EndOfEventAction() methods
 //
-void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {  
+void DRTB23SimEventAction::BeginOfEventAction(const G4Event*) {  
     
     //Initialize data memebers at begin of each event
     //
@@ -83,7 +83,7 @@ void DREMTubesEventAction::BeginOfEventAction(const G4Event*) {
 
 }
 
-void DREMTubesEventAction::EndOfEventAction(const G4Event* ) {
+void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
  
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 

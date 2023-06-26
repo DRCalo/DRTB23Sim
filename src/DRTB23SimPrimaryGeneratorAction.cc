@@ -1,13 +1,13 @@
 //**************************************************
-// \file DREMTubesPrimaryGeneratorAction.cc
-// \brief: Implementation of DREMTubesPrimaryGeneratorAction class
+// \file DRTB23SimPrimaryGeneratorAction.cc
+// \brief: Implementation of DRTB23SimPrimaryGeneratorAction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Includers from project files
 //
-#include "DREMTubesPrimaryGeneratorAction.hh"
+#include "DRTB23SimPrimaryGeneratorAction.hh"
 
 //Includers from Geant4
 //
@@ -25,7 +25,7 @@
 
 //Constructor
 //
-DREMTubesPrimaryGeneratorAction::DREMTubesPrimaryGeneratorAction()
+DRTB23SimPrimaryGeneratorAction::DRTB23SimPrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(),
    fGeneralParticleSource( nullptr )
    /*fParticleGun( nullptr )*/ {
@@ -46,7 +46,7 @@ DREMTubesPrimaryGeneratorAction::DREMTubesPrimaryGeneratorAction()
 
 //De-constructor
 //
-DREMTubesPrimaryGeneratorAction::~DREMTubesPrimaryGeneratorAction() {
+DRTB23SimPrimaryGeneratorAction::~DRTB23SimPrimaryGeneratorAction() {
   
     delete fGeneralParticleSource;
     //delete fParticleGun;
@@ -55,7 +55,7 @@ DREMTubesPrimaryGeneratorAction::~DREMTubesPrimaryGeneratorAction() {
 
 //GeneratePrimaries() method
 //
-void DREMTubesPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
+void DRTB23SimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     
     fGeneralParticleSource->GeneratePrimaryVertex(anEvent);
     //fParticleGun->GeneratePrimaryVertex(anEvent);

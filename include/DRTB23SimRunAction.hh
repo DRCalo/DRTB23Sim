@@ -1,32 +1,32 @@
 //**************************************************
-// \file DREMTubesRunAction.hh 
-// \brief: Definition of DREMTubesBRunAction class 
+// \file DRTB23SimRunAction.hh 
+// \brief: Definition of DRTB23SimRunAction class 
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesRunAction_h
-#define DREMTubesRunAction_h 1
+#ifndef DRTB23SimRunAction_h
+#define DRTB23SimRunAction_h 1
 
 //Includers from Geant4
 //
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 
-class DREMTubesEventAction;
+class DRTB23SimEventAction;
 class G4Run;
 
-class DREMTubesRunAction : public G4UserRunAction {
+class DRTB23SimRunAction : public G4UserRunAction {
     
     public:
         //Constructor
         //
-        DREMTubesRunAction( DREMTubesEventAction* eventAction );
+        DRTB23SimRunAction( DRTB23SimEventAction* eventAction );
         //De-constructor
         //
-        virtual ~DREMTubesRunAction();
+        virtual ~DRTB23SimRunAction();
 
         //Methods
         //
@@ -34,7 +34,7 @@ class DREMTubesRunAction : public G4UserRunAction {
         virtual void EndOfRunAction(const G4Run*);
 
     private:
-        DREMTubesEventAction* fEventAction;
+        DRTB23SimEventAction* fEventAction;
 
 };
 
