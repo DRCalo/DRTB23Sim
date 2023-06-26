@@ -1,14 +1,14 @@
 //**************************************************
-// \file DREMTubesDetectorConstruction.hh
-// \brief: Definition of DREMTubesDetectorConstruction class
+// \file DRTB23SimDetectorConstruction.hh
+// \brief: Definition of DRTB23SimDetectorConstruction class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Prevent including header multplie times
 //
-#ifndef DREMTubesDetectorConstruction_h
-#define DREMTubesDetectorConstruction_h 1
+#ifndef DRTB23SimDetectorConstruction_h
+#define DRTB23SimDetectorConstruction_h 1
 
 //Includers from Geant4
 //
@@ -20,21 +20,21 @@
 #include "G4ExtrudedSolid.hh"
 
 //Include geometrical parameters
-#include "DREMTubesGeoPar.hh"
+#include "DRTB23SimGeoPar.hh"
 //Forward declaration
 //
 class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
-class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
+class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
   
     public:
         //Constructor
         //
-        DREMTubesDetectorConstruction(const G4bool VerRot);
+        DRTB23SimDetectorConstruction(const G4bool VerRot);
         //De-constructor
         //
-        virtual ~DREMTubesDetectorConstruction();
+        virtual ~DRTB23SimDetectorConstruction();
 
     public:
         virtual G4VPhysicalVolume* Construct();
@@ -99,7 +99,7 @@ class DREMTubesDetectorConstruction : public G4VUserDetectorConstruction {
         G4bool fVertRot;  
 };
 
-inline G4int DREMTubesDetectorConstruction::GetTowerID( const G4int& cpno ) const {
+inline G4int DRTB23SimDetectorConstruction::GetTowerID( const G4int& cpno ) const {
 // remap as for 2021 hardware numbering from front face
 //    const G4int idmap[9]={1,2,3,4,0,5,6,7,8};
 // test:remap as for output of old simulation
@@ -108,12 +108,12 @@ inline G4int DREMTubesDetectorConstruction::GetTowerID( const G4int& cpno ) cons
     return cpno;		
 }
 
-inline G4int DREMTubesDetectorConstruction::GetSiPMID( const G4int& cpno ) const {
+inline G4int DRTB23SimDetectorConstruction::GetSiPMID( const G4int& cpno ) const {
 // kept for compatibility with old simulation. Dummy for now
     return cpno;		
 }
 
-inline G4int DREMTubesDetectorConstruction::GetSiPMTower( const G4int& town ) const {
+inline G4int DRTB23SimDetectorConstruction::GetSiPMTower( const G4int& town ) const {
     G4int SiPMTower=-1;
     for(int i=0;i<NoModulesSiPM;i++){
       if(town==SiPMMod[i])SiPMTower=i;
@@ -121,11 +121,11 @@ inline G4int DREMTubesDetectorConstruction::GetSiPMTower( const G4int& town ) co
     return SiPMTower;		
 }
 
-inline const G4VPhysicalVolume* DREMTubesDetectorConstruction::GetLeakCntPV() const {
+inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetLeakCntPV() const {
     return fLeakCntPV;
 }
 
-inline const G4VPhysicalVolume* DREMTubesDetectorConstruction::GetWorldPV() const {
+inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
     return fWorldPV;
 }
 

@@ -1,6 +1,6 @@
 //**************************************************
-// \file DREMTubesSteppingAction.hh
-// \brief: Definition of DREMTubesSteppingAction.hh
+// \file DRTB23SimSteppingAction.hh
+// \brief: Definition of DRTB23SimSteppingAction.hh
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim) 
 //          @lopezzot
 // \start date: 7 July 2021
@@ -8,8 +8,8 @@
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesSteppingAction_h
-#define DREMTubesSteppingAction_h 1
+#ifndef DRTB23SimSteppingAction_h
+#define DRTB23SimSteppingAction_h 1
 
 //Includers from Geant4
 //
@@ -22,24 +22,24 @@ class G4OpBoundaryProcess;
 
 //Forward declarations from project files
 //
-class DREMTubesDetectorConstruction;
-class DREMTubesEventAction;
+class DRTB23SimDetectorConstruction;
+class DRTB23SimEventAction;
 
 //Includers from project files
 //
-#include "DREMTubesSignalHelper.hh"
+#include "DRTB23SimSignalHelper.hh"
 
-class DREMTubesSteppingAction : public G4UserSteppingAction {
+class DRTB23SimSteppingAction : public G4UserSteppingAction {
     
     public:
         //Constructor
         //
-        DREMTubesSteppingAction(DREMTubesEventAction* eventAction,
-				const DREMTubesDetectorConstruction* detConstruction,
+        DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction,
+				const DRTB23SimDetectorConstruction* detConstruction,
                                 const G4bool FullOptic );
         //De-constructor
         //
-        virtual ~DREMTubesSteppingAction();
+        virtual ~DRTB23SimSteppingAction();
         
         //User impementation of SteppingAction
         //
@@ -61,20 +61,20 @@ class DREMTubesSteppingAction : public G4UserSteppingAction {
     
     private:
 
-        DREMTubesEventAction*  fEventAction;  
+        DRTB23SimEventAction*  fEventAction;  
 
         G4OpBoundaryProcess* fOpProcess;
                 
-	//Pointer to DREMTubesDetectorConstruction
+	//Pointer to DRTB23SimDetectorConstruction
 	//
-        const DREMTubesDetectorConstruction* fDetConstruction;
+        const DRTB23SimDetectorConstruction* fDetConstruction;
 				
 	G4bool fFullOptic;
 
         //Pointer to only existing implementation (singleton)
-    	//of DREMTubesTowerHelper
+    	//of DRTB23SimTowerHelper
     	//
-        DREMTubesSignalHelper* fSignalHelper;
+        DRTB23SimSignalHelper* fSignalHelper;
 
 };
 

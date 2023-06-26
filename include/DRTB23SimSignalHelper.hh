@@ -1,6 +1,6 @@
 //**************************************************
-// \file DREMTubesSignalHelper.hh
-// \brief: Definition of DREMTubesSignalHelper class
+// \file DRTB23SimSignalHelper.hh
+// \brief: Definition of DRTB23SimSignalHelper class
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
 //          @lopezzot
 // \start date: 1 September 2021
@@ -8,30 +8,30 @@
 
 //Prevent including header multiple times
 //
-#ifndef DREMTubesSignalHelper_h
-#define DREMTubesSignalHelper_h
+#ifndef DRTB23SimSignalHelper_h
+#define DRTB23SimSignalHelper_h
 
 //Includers from Geant4
 //
 #include "globals.hh"
 
-class DREMTubesSignalHelper {
+class DRTB23SimSignalHelper {
 
     private:
 
-        static DREMTubesSignalHelper* instance;
+        static DRTB23SimSignalHelper* instance;
 
 	//Private constructor (singleton)
         //
-	DREMTubesSignalHelper();
+	DRTB23SimSignalHelper();
 
     public:
 
-    	static DREMTubesSignalHelper* Instance();
+    	static DRTB23SimSignalHelper* Instance();
 
     	G4double ApplyBirks( const G4double& de, const G4double& steplength );
 
-	G4int SmearSSignal( const G4double& de );
+	    G4int SmearSSignal( const G4double& de );
 
     	G4int SmearCSignal( );
 
