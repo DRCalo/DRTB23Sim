@@ -99,6 +99,10 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
     if ( volume->GetName() == "Preshower_scin" || volume->GetName() == "Preshower_pb" ){
         fEventAction->AddPSEnergy( edep );
     }
+    if ( volume->GetName() == "Preshower_scin" ){
+        fEventAction->AddPSSciEnergy( edep );
+    }
+
     
     if ( volume != fDetConstruction->GetWorldPV() &&
          volume != fDetConstruction->GetLeakCntPV() &&

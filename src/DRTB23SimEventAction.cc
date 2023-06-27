@@ -40,6 +40,7 @@ DRTB23SimEventAction::DRTB23SimEventAction()
     PrimaryParticleEnergy(0.),
     EscapedEnergy(0.),
     PSEnergy(0.),
+    PSSciEnergy(0.),
     VectorSignals(0.),
     VectorSignalsCher(0.),
     VecSPMT(0.),
@@ -68,6 +69,7 @@ void DRTB23SimEventAction::BeginOfEventAction(const G4Event*) {
     PrimaryParticleEnergy = 0.;
     EscapedEnergy = 0.;
     PSEnergy = 0.;
+    PSSciEnergy = 0.;
 
     VectorSignals.clear();
     VectorSignalsCher.clear();
@@ -106,8 +108,9 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleIColumn(6, PrimaryPDGID);
     analysisManager->FillNtupleDColumn(7, EscapedEnergy);
     analysisManager->FillNtupleDColumn(8, PSEnergy);
-    analysisManager->FillNtupleDColumn(9, PrimaryX);
-    analysisManager->FillNtupleDColumn(10,PrimaryY);
+    analysisManager->FillNtupleDColumn(9, PSSciEnergy);
+    analysisManager->FillNtupleDColumn(10, PrimaryX);
+    analysisManager->FillNtupleDColumn(11,PrimaryY);
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled
 
