@@ -571,8 +571,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     * Volumes for the iron platform the prototype is placed on *
     ************************************************************/
 
-    double platform_radius = 1200*mm;    // Radius guessed for now
-
     // Rotation to bring the G4Tubs into the right Orientation
     G4RotationMatrix rot_vol_rotmat  = G4RotationMatrix();
     G4double rot_vol_xrot=90*deg;
@@ -582,7 +580,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     G4RotationMatrix platform_rotmat  = G4RotationMatrix();
     double horiz_rot = 0*deg;
     platform_rotmat.rotateY(horiz_rot);
-    // double platform_half_height = 25*mm;     // Height guessed for now
     G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
     G4Tubs* iron_platform_solid = new G4Tubs("iron_platform_solid", 0, platform_radius, platform_half_height, 0., 2.*pi);
 
@@ -595,13 +592,9 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     /************************************************
     * Volumes for two bars the housing is placed on *
     *************************************************/
-    // double bar_half_length = 40.0*cm/2;
-    // double bar_half_width  = 4.5*cm/2;
-    // double bar_half_height = 9.0*cm/2;
 
     G4Box* outer_bar_solid = new G4Box("outer_bar_solid", bar_half_length, bar_half_height, bar_half_width);
 
-    // double bar_wall_thickness = 10.0*mm;
     double subtract_bar_width = bar_half_width - bar_wall_thickness;
     double subtract_bar_height = bar_half_height - bar_wall_thickness;
     G4Box* subtract_bar = new G4Box("subtract_bar", bar_half_length, subtract_bar_height, subtract_bar_width);
@@ -617,15 +610,8 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     G4RotationMatrix* unit_rotation = new G4RotationMatrix();
 
     // housing of calorimter
-    // double housing_half_length = 145.5*cm/2;
-    // double housing_half_width  = 18.0*cm/2;
-    // double housing_half_height = 15.0*cm/2;
-
     G4Box* housing_solid = new G4Box("housing_solid", housing_half_width, housing_half_height, housing_half_length);
 
-    // double side_wall_thickness = 1.5*mm;
-    // double top_wall_thickness  = 1.4*mm;
-    // double bot_wall_thickness  = 10.0*mm;
     double subtract_box_half_width = housing_half_width - side_wall_thickness;
     double subtract_box_half_height = housing_half_height - (top_wall_thickness+bot_wall_thickness)/2;
 
@@ -644,12 +630,9 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
 
     // approximated support structure on which housing is placed
-    // double support_half_length = 163.5*cm/2;
-    // double support_half_height = 10.0*cm/2;
 
     G4Box* outer_support_solid = new G4Box("outer_support_solid", housing_half_width, support_half_height, support_half_length);
 
-    // double support_wall_thickness = 7.0*mm;
     double subtract_support_width = housing_half_width - support_wall_thickness;
     double subtract_support_height = support_half_height - support_wall_thickness;
     G4Box* subtract_support = new G4Box("subtract_support", subtract_support_width, subtract_support_height, support_half_length);
@@ -665,7 +648,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
 
     // Union with front and back bar
-    // double bar_pos_from_front = 16.0*cm;
     double bar_y = -(housing_half_height+2*support_half_height+bar_half_height);
     G4ThreeVector bar_front_pos = G4ThreeVector(0, bar_y, -(housing_half_length-bar_half_width-bar_pos_from_front));
     G4UnionSolid* fullbox_frontbar = new G4UnionSolid("fullbox_frontbar", fullbox_nobars, bar_solid, unit_rotation, bar_front_pos);
@@ -705,7 +687,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //double fullbox_centre_Y = housing_half_height + 2*support_half_height + 2*bar_half_height - bar_pos_from_front*tan(-vert_rot); // Centre of union volume based on first solid
 
     //G4ThreeVector fullbox_pos = G4ThreeVector(0, 0, fullbox_shift);
-    // double plastic_cover_full_length = 20.0*mm;
     double rotation_R = housing_half_length - caloZ - plastic_cover_full_length; //distance between housing centre and calo centre
     double fullbox_X = sin(horiz_rot)*rotation_R;
 

@@ -30,6 +30,7 @@ namespace {
     // thickness = from context
 
     // platform constants
+    static constexpr G4double platform_radius = 1200*mm;    // Radius guessed for now
     static constexpr G4double platform_half_height = 25*mm;     // Height guessed for now
     
     // bar/feet constants
