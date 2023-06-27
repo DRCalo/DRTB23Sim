@@ -362,22 +362,9 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //
     //G4double tubeZ = fiberZ;
 
-    // Geometry parameters of the SiPM
+    // Geometry parameters of the module equipped
     //
-    G4double SiPMX = 1.*mm;
-    G4double SiPMY = SiPMX;
-    G4double SiPMZ = 0.36*mm;
-    G4double SiPMZh = SiPMZ/2.;
-
-    // Geometry parameters of the SiPM, active silicon layer
-    //
-    G4double SiX = 1.*mm;
-    G4double SiY = SiX;
-    G4double SiZ = 0.05*mm;
-
-    // Geometry parameters of the module equipped with SiPM
-    //
-    G4double moduleequippedZ = moduleZ + SiPMZ;
+    G4double moduleequippedZ = moduleZ;
     G4double moduleequippedX = moduleX; 
     G4double moduleequippedY = moduleY;
 
@@ -477,7 +464,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                                     0,               
                                     fCheckOverlaps);
 
-   // Module equipped (with SiPM)
+   // Module equipped
    //
    // Basic module structure: extrusion of an hexcell shape
     G4TwoVector offA(0,0), offB(0,0);
@@ -830,108 +817,8 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                                                      0,
                                                      fCheckOverlaps);
 
-    // Optical Surface properties between the glass and the Si of the SiPM
-    G4OpticalSurface* OpSurfaceGlassSi = new G4OpticalSurface("OpSurfaceGlassSi");
-    OpSurfaceGlassSi -> SetType(dielectric_metal);
-    OpSurfaceGlassSi -> SetModel(glisur);
-    OpSurfaceGlassSi -> SetFinish(polished);
-    G4double efficiencyOpSurfaceGlassSi[ENTRIES] =     //100% detection efficiency 
-                                    { 1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1,
-                                      1, 1, 1, 1 };
-
-    /*G4double efficiencyOpSurfaceGlassSi[ENTRIES] =     //0% detection efficiency 
-                                    { 0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      0, 0, 0, 0 };*/
-
-    G4double reflectivityOpSurfaceGlassSi[ENTRIES] =  // 0% reflection
-                                    { 0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0.,
-                                      0., 0., 0., 0. };
-
-    G4MaterialPropertiesTable* MPTOpSurfaceGlassSi = new G4MaterialPropertiesTable();
-    MPTOpSurfaceGlassSi -> AddProperty("EFFICIENCY", 
-        photonEnergy, efficiencyOpSurfaceGlassSi, ENTRIES)->SetSpline(true);
-    MPTOpSurfaceGlassSi -> AddProperty("REFLECTIVITY", 
-            photonEnergy, reflectivityOpSurfaceGlassSi, ENTRIES)->SetSpline(true);
-    OpSurfaceGlassSi -> SetMaterialPropertiesTable(MPTOpSurfaceGlassSi);
-
-    // SiPM
+    // Tubes with Scintillating fibers
     //
-    G4VSolid* SiPMS = new G4Box("SiPM", SiPMX/2, SiPMY/2, SiPMZ/2);
-                         
-    G4LogicalVolume* SiPMLV = new G4LogicalVolume(SiPMS, GlassMaterial,"SiPM");
-
-//    SiPMLV->SetVisAttributes(G4VisAttributes::Invisible);
-    // Here I build the Si of the SiPM
-    // 
-    G4VSolid* SiS = new G4Box("Si", SiX/2, SiY/2, SiZ/2);
-                         
-    G4LogicalVolume* SiLV = new G4LogicalVolume( SiS, SiMaterial, "Si");
-
-    // Si placement inside SiPM
-    //
-    G4ThreeVector vec_Si;
-    vec_Si.setX(0.);
-    vec_Si.setY(0.);
-    vec_Si.setZ(SiPMZ/2-SiZ/2); // Si at the end of SiPM
-                             
-    /*G4VPhysicalVolume* SiPV =*/ new G4PVPlacement(0,
-                                                vec_Si,  
-                                                SiLV,
-                                                "Si",
-                                                SiPMLV,
-                                                false,
-                                                0,
-                                                fCheckOverlaps);
-    G4VisAttributes* SiVisAtt = new G4VisAttributes(G4Colour(0.0,0.8,0.0)); //green
-    SiVisAtt->SetVisibility(true);
-    SiVisAtt->SetForceWireframe(true);
-    SiVisAtt->SetForceSolid(true);
-    SiLV->SetVisAttributes(SiVisAtt);
-//    SiLV->SetVisAttributes(G4VisAttributes::Invisible);
-
-    // Logical Skin Surface placement around the silicon of the SiPM
-    //
-    /*G4LogicalSkinSurface* OpsurfaceSi =*/ new G4LogicalSkinSurface("OpsurfaceSi", 
-        SiLV, OpSurfaceGlassSi);
-
-    // Optical Surface properties between the scintillating fibers
-    // and the default material
-    // I'm trying to define an optical surface completly blacked 
-    // as if we absorb the light at one end of fibers
-    //
-    G4OpticalSurface* OpSurfacedefault = new G4OpticalSurface("OpSurfacedefault");
-    OpSurfacedefault -> SetType(dielectric_dielectric);
-    OpSurfacedefault -> SetModel(unified);
-    OpSurfacedefault -> SetFinish(polishedbackpainted); 
-    // Painted from inside the fibers, light is absorbed
-
-    // Tubes with scintillating fibers and SiPM next to them
-    //
-    // Attention: I place an optical surface painted (blacked) from the moduleequippedPV 
-    // to the SiPMPV, in so doing I completly avoid any cross talk between SiPMs
-    //
-    //G4VPhysicalVolume* physi_S_fiber[NofFiberscolumn][NofFibersrow];
-    //G4VPhysicalVolume* physi_SiPM[NofFiberscolumn][NofFibersrow];  
-    //G4LogicalBorderSurface* logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow];
-		
     G4int copynumber = 0;
 
     for(int column=0; column<NofFiberscolumn; column++){
@@ -946,14 +833,10 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
             S_fiber_row.str("");
             S_fiber_row << row;
             std::string S_name;
-            std::string SiPM_name;
             S_name = "S_column_" + S_fiber_column.str() + "_row_" + S_fiber_row.str(); 
-            SiPM_name = "S_SiPM"; 
-            //SiPM_name = "SiPMS_column" + S_fiber_column.str() + "_row_" + S_fiber_row.str();
 
             G4double S_x, S_y;
             G4ThreeVector vec_S_fiber;
-            G4ThreeVector vec_SiPM;
 
             if(row%2==0){
                 S_x = +moduleX/2 - tuberadius - (tuberadius*2+2*tolerance)*column;
@@ -963,10 +846,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                 vec_S_fiber.setY(S_y);
                 vec_S_fiber.setZ(0.);
 
-                vec_SiPM.setX(S_x);
-                vec_SiPM.setY(S_y);
-                vec_SiPM.setZ(fiberZ/2+SiPMZ/2-0.18);
-            
                 copynumber = ((NofFibersrow/2)*column+row/2);
                 auto logic_S_fiber = constructscinfiber(tolerance,
                                                         tuberadius,
@@ -988,29 +867,12 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                                                                moduleLV,
                                                                false,
                                                                copynumber); 
-
-                // SiPM placement
-                //
-                /*physi_SiPM[column][row] =*/ new G4PVPlacement(0,
-                                                            vec_SiPM,
-                                                            SiPMLV,
-                                                            SiPM_name,
-                                                            moduleequippedLV,
-                                                            false,
-                                                            copynumber); //same copynumber of fibers 
-          
-                /*logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow] =
-                    new G4LogicalBorderSurface("logic_OpSurface_defaultAir",
-                                               CalorimeterPV, 
-                                               physi_SiPM[column][row],
-                                               OpSurfacedefault);*/
             }
         };
     };
 
-    // Tubes with Cherenkov fibers and SiPM next to them
+    // Tubes with Cherenkov fibers
     //
-    //G4VPhysicalVolume* physi_C_fiber[NofFiberscolumn][NofFibersrow];
   
     for(int column=0; column<NofFiberscolumn; column++){
         
@@ -1023,13 +885,10 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
             C_fiber_row.str("");
             C_fiber_row << row;
             std::string C_name;
-            std::string SiPM_name;
             C_name = "C_column_" + C_fiber_column.str() + "_row_" + C_fiber_row.str(); 
-            SiPM_name = "C_SiPM"; 
 
             G4double C_x, C_y;
             G4ThreeVector vec_C_fiber;
-            G4ThreeVector vec_SiPM;
 
             if(row%2 != 0){
                 C_x = moduleX/2 - tuberadius - tuberadius - (tuberadius*2+2*tolerance)*column;
@@ -1038,10 +897,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                 vec_C_fiber.setX(C_x);
                 vec_C_fiber.setY(C_y);
                 vec_C_fiber.setZ(0.);
-
-                vec_SiPM.setX(C_x);
-                vec_SiPM.setY(C_y);
-                vec_SiPM.setZ(fiberZ/2+SiPMZ/2-0.18);
 
                 copynumber = ((NofFibersrow/2)*column+row/2);
                         
@@ -1063,20 +918,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                                                          moduleLV,
                                                          false,
                                                          copynumber);
-
-                /*physi_SiPM[column][row] =*/ new G4PVPlacement(0,
-                                                        vec_SiPM,
-                                                        SiPMLV,
-                                                        SiPM_name,
-                                                        moduleequippedLV,
-                                                        false,
-                                                        copynumber); //same copynumber of fiber 
-
-                /*logic_OpSurface_defaultAir[NofFiberscolumn][NofFibersrow] =
-                    new G4LogicalBorderSurface("logic_OpSurface_defaultAir",
-                                               CalorimeterPV, 
-                                               physi_SiPM[column][row],
-                                               OpSurfacedefault);*/
             }      
         };
     };
