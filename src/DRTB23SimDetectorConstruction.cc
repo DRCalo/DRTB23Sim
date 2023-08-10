@@ -10,6 +10,7 @@
 //Includers from project files
 //
 #include "DRTB23SimDetectorConstruction.hh"
+#include "DRTB23SimGeoMessenger.hh"
 
 //Includers from Geant4
 //
@@ -42,7 +43,66 @@
 #include "G4SubtractionSolid.hh"
 #include "G4UnionSolid.hh"
 
+//Messenger constructor
 //
+DRTB23SimGeoMessenger::DRTB23SimGeoMessenger(DRTB23SimDetectorConstruction* DetConstruction)
+    : fDetConstruction(DetConstruction){
+    
+    //The Messenger directory and commands must be initialized
+    //within constructor
+    //
+    fMsgrDirectory = new G4UIdirectory("/tbgeo/");
+    fMsgrDirectory->SetGuidance("Set movable parameters in test-beam geometry.");
+
+    fXshiftcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/xshift", this);
+    fXshiftcmd->SetGuidance("Shift test-beam platform x direction (default unit mm)");
+    fXshiftcmd->SetDefaultUnit("mm");
+    fYshiftcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/yshift", this);
+    fYshiftcmd->SetGuidance("Shift test-beam platform y direction (default unit mm)");
+    fYshiftcmd->SetDefaultUnit("mm");
+    fOrzrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/orlrot", this);
+    fOrzrotcmd->SetGuidance("Rotate platform (default deg)");
+    fOrzrotcmd->SetDefaultUnit("deg");
+    fVerrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/verrot", this);
+    fVerrotcmd->SetGuidance("Lift up calorimeter from back side (default deg)");
+    fVerrotcmd->SetDefaultUnit("deg");
+}
+
+//Messenger destructor
+//
+DRTB23SimGeoMessenger::~DRTB23SimGeoMessenger(){
+
+    //The Messenger fields should be deleted
+    //in destructor
+    delete fMsgrDirectory;
+    delete fXshiftcmd;
+    delete fYshiftcmd;
+    delete fOrzrotcmd;
+    delete fVerrotcmd;
+}
+
+//Messenger SetNewValue virtual method from base class
+//
+void DRTB23SimGeoMessenger::SetNewValue(G4UIcommand* command, G4String newValue){
+
+    if(command == fXshiftcmd){
+        fDetConstruction->SetXshift(fXshiftcmd->GetNewDoubleValue(newValue));
+        G4cout<<"tbgeo: x-shifted test-beam setup by "<<fDetConstruction->GetXshift()<<" mm"<<G4endl;
+    }
+    else if(command == fYshiftcmd){
+        fDetConstruction->SetYshift(fYshiftcmd->GetNewDoubleValue(newValue));
+        G4cout<<"tbgeo: y-shifted test-beam setup by "<<fDetConstruction->GetYshift()<<" mm"<<G4endl;
+    }
+    else if(command == fOrzrotcmd){
+        fDetConstruction->SetOrzrot(fOrzrotcmd->GetNewDoubleValue(newValue));
+        G4cout<<"tbgeo: orz-rotated test-beam setup by "<<fDetConstruction->GetOrzrot()<<" rad"<<G4endl;
+    }
+    else if(command == fVerrotcmd){
+        fDetConstruction->SetVerrot(fVerrotcmd->GetNewDoubleValue(newValue));
+        G4cout<<"tbgeo: ver-rotated test-beam setup by "<<fDetConstruction->GetVerrot()<<" rad"<<G4endl;
+    }
+}
+
 //  sqrt3 constants used in code
 //  reciprocal of sqrt3 given as number that divided 
 //  by sqrt 3 gives 3 
@@ -55,9 +115,11 @@ const G4double sq3m1=sq3/3.;
 DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction(const G4bool VertRot)
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
-		fLeakCntPV(nullptr),
+    fLeakCntPV(nullptr),
     fWorldPV(nullptr),
     fVertRot(VertRot){
+
+    fGeoMessenger = new DRTB23SimGeoMessenger(this);
 }
 
 //De-constructor
