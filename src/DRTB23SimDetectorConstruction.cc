@@ -60,10 +60,10 @@ DRTB23SimGeoMessenger::DRTB23SimGeoMessenger(DRTB23SimDetectorConstruction* DetC
     fYshiftcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/yshift", this);
     fYshiftcmd->SetGuidance("Shift test-beam platform y direction (default unit mm)");
     fYshiftcmd->SetDefaultUnit("mm");
-    fOrzrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/orlrot", this);
+    fOrzrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/horizrot", this);
     fOrzrotcmd->SetGuidance("Rotate platform (default deg)");
     fOrzrotcmd->SetDefaultUnit("deg");
-    fVerrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/verrot", this);
+    fVerrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/vertrot", this);
     fVerrotcmd->SetGuidance("Lift up calorimeter from back side (default deg)");
     fVerrotcmd->SetDefaultUnit("deg");
 }
@@ -464,8 +464,8 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     G4Box*            stage_solid   = new G4Box("stage_solid", platform_radius, platform_radius, platform_radius);
     G4LogicalVolume*  stage_logical = new G4LogicalVolume(stage_solid, defaultMaterial, "stage_logical");
     stage_logical->SetVisAttributes(G4VisAttributes::Invisible);
-    G4double stage_x = 0.0*CLHEP::mm;
-    G4double stage_y = 0.0*CLHEP::mm;
+    G4double stage_x = fXshift; //set via G4UIMessenger, default=0.
+    G4double stage_y = fYshift; //set via G4UIMessenger, default=0.
     /*G4VPhysicalVolume* stage_physical =*/ new G4PVPlacement(0,                // no rotation
                                                               G4ThreeVector(stage_x,stage_y, 0),
                                                               stage_logical,    // its logical
@@ -660,7 +660,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
     // Horizontal rotation of the platform (including prototype)
     G4RotationMatrix platform_rotmat  = G4RotationMatrix();
-    double horiz_rot = 0*deg;
+    double horiz_rot = fOrzrot; //set via G4UIMessenger, default=0.
     platform_rotmat.rotateY(horiz_rot);
     G4Material* platformMaterial = nistManager->FindOrBuildMaterial("G4_Fe");
     G4Tubs* iron_platform_solid = new G4Tubs("iron_platform_solid", 0, platform_radius, platform_half_height, 0., 2.*pi);
@@ -762,7 +762,10 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //G4RotationMatrix fullbox_rotmat = rot_vol_rotmat.inverse();
     G4RotationMatrix fullbox_rotmat = G4RotationMatrix();
     // Vertical rotation of module
-    double vert_rot = fVertRot ? -2.5*deg : 0.0*deg;
+    //double vert_rot = fVertRot ? -2.5*deg : 0.0*deg; //to be removed
+    double vert_rot = -fVerrot; //set via G4UIMessenger, default=0.
+                                //- sign needed to rotate as
+                                //done at the test-beam.
     fullbox_rotmat.rotateX(vert_rot);
 
     
