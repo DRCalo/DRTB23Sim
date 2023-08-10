@@ -1,3 +1,12 @@
+#Uncomment the /tbgeo paramenters below for geometry visualization
+#with non-default parameters
+#/tbgeo/xshift x mm
+#/tbgeo/yshift y mm
+#/tbgeo/horizrot theta deg
+#/tbgeo/verttot phi deg
+#or open the simulation in vis-gui mode (./DRTB23Sim)
+#pass the /tbgeo parameters and then call this macro
+#(/control/execute DRTB23Sim_init_vis.mac)
 #
 # Macro file for the initialization visualization settings
 # in interactive session
