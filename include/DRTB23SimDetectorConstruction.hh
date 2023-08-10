@@ -1,7 +1,9 @@
 //**************************************************
 // \file DRTB23SimDetectorConstruction.hh
-// \brief: Definition of DRTB23SimDetectorConstruction class
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
+// \brief: Definition of 
+//         DRTB23SimDetectorConstruction class
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
+//          @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
@@ -19,12 +21,14 @@
 #include "G4TwoVector.hh"
 #include "G4ExtrudedSolid.hh"
 
-//Include geometrical parameters
+//Includers from project files
+//
 #include "DRTB23SimGeoPar.hh"
+#include "DRTB23SimGeoMessenger.hh"
+
 //Forward declaration
 //
 class G4VPhysicalVolume;
-class G4GlobalMagFieldMessenger;
 
 class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
   
@@ -66,6 +70,17 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
     	//
 	const G4VPhysicalVolume* GetLeakCntPV() const;
     	const G4VPhysicalVolume* GetWorldPV() const;
+        G4double GetXshift() const {return fXshift;};
+        G4double GetYshift() const {return fYshift;};
+        G4double GetOrzrot() const {return fOrzrot;};
+        G4double GetVerrot() const {return fVerrot;};
+
+        //Setters
+        //
+        void SetXshift(const G4double& val) {fXshift=val;};
+        void SetYshift(const G4double& val) {fYshift=val;};
+        void SetOrzrot(const G4double& val) {fOrzrot=val;};
+        void SetVerrot(const G4double& val) {fVerrot=val;};
 
         //Other methods
 	//
@@ -73,9 +88,8 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
         G4int GetSiPMID(const G4int& cpno ) const; 
 	G4int GetSiPMTower(const G4int& town ) const;
        
-        //
-	//  Build contour in x-y plane of a module as 
-	//  an hexcell shape
+	//Build contour in x-y plane of a module as 
+	//an hexcell shape
 	//
 	std::vector<G4TwoVector> calcmod(double radius, int nrow, int ncol); 
 
@@ -84,19 +98,23 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
         //Mandatory method for Geant4
         //
         G4VPhysicalVolume* DefineVolumes();
-/*
-	void DefineCommands();
-	G4GenericMessenger* fMessenger;
-	G4double fAngleX;
-	G4double fAngleY;
-*/				//Members
-				//
+	
+        //Members
+	//
         G4bool  fCheckOverlaps; // option for checking volumes overlaps
 				
-				G4VPhysicalVolume* fLeakCntPV; //PV: lekage counter
-				G4VPhysicalVolume* fWorldPV;   //PV: wourld volume
+	G4VPhysicalVolume* fLeakCntPV; //PV: lekage counter
+	G4VPhysicalVolume* fWorldPV;   //PV: wourld volume
 
         G4bool fVertRot;  
+
+        //Pointer to messenger for UI
+        //
+        DRTB23SimGeoMessenger* fGeoMessenger;
+
+        //Parameters selectable via UI
+        //
+        G4double fXshift{0.}, fYshift{0.}, fVerrot{0.}, fOrzrot{0.};
 };
 
 inline G4int DRTB23SimDetectorConstruction::GetTowerID( const G4int& cpno ) const {
