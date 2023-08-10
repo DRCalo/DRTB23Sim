@@ -395,6 +395,26 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                                   0,                // copy number
                                   fCheckOverlaps);  // check overlaps 
 
+    /*************************************************************************************************
+    * Stage Volume:                                                                                  *
+    * "Virtual" Volume only used to move platform, calorimeter and preshower in unison wrt. the beam *
+    **************************************************************************************************/
+    G4Box*            stage_solid   = new G4Box("stage_solid", platform_radius, platform_radius, platform_radius);
+    G4LogicalVolume*  stage_logical = new G4LogicalVolume(stage_solid, defaultMaterial, "stage_logical");
+    stage_logical->SetVisAttributes(G4VisAttributes::Invisible);
+    G4double stage_x = 0.0*CLHEP::mm;
+    G4double stage_y = 0.0*CLHEP::mm;
+    /*G4VPhysicalVolume* stage_physical =*/ new G4PVPlacement(0,                // no rotation
+                                                              G4ThreeVector(stage_x,stage_y, 0),
+                                                              stage_logical,    // its logical
+                                                              "Stage",          // its name
+                                                              worldLV,          // its mother
+                                                              false,            // no boolean oper 
+                                                              0,                // copy number
+                                                              fCheckOverlaps);  // check overlaps 
+
+
+
     //Preshower
     //
     auto PSSolid = new G4Box("Preshower", PSX/2., PSY/2., PSZ/2.);
@@ -405,7 +425,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 		       G4ThreeVector(preshower_pos_x, preshower_pos_y, preshower_pos_z - PSZ/2.),
 		       PSLV,
 		       "Preshower",
-		       worldLV,
+		       stage_logical,
 		       false,
 		       0,
 		       fCheckOverlaps);	 
@@ -670,7 +690,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     /*G4VPhysicalVolume* iron_platform_physical =*/ new G4PVPlacement(iron_plat_transfm,
                                                                       iron_platform_logical,
                                                                       "IronPlatform",
-                                                                      worldLV,
+                                                                      stage_logical,
                                                                       false,
                                                                       0,
                                                                       fCheckOverlaps);
@@ -703,7 +723,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     /*G4VPhysicalVolume* fullbox_physical =*/ new G4PVPlacement(fullbox_transfm,
                                                                 fullbox_logical,
                                                                 "FullBox",
-                                                                worldLV,
+                                                                stage_logical,
                                                                 false,
                                                                 0,
                                                                 fCheckOverlaps);
