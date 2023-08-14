@@ -58,10 +58,6 @@ void DRTB23SimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     fGeneralParticleSource->GeneratePrimaryVertex(anEvent);
     //fParticleGun->GeneratePrimaryVertex(anEvent);
 
-    G4cout<<fGeneralParticleSource->GetParticleEnergy()<<G4endl;
-    G4cout<<fGeneralParticleSource->GetParticlePosition()<<G4endl;
-    G4cout<<fGeneralParticleSource->GetParticleDefinition()->GetPDGEncoding()<<G4endl;
-
     //Save primary particle energy, PDGID and x-y position
     //
     fEventAction->SavePrimaryEnergy(fGeneralParticleSource->GetParticleEnergy());
