@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
  
     // Error in argument numbers
     //
-    if ( argc > 11 ) {
+    if ( argc > 9 ) {
         PrintUsageError::UsageError();
         return 1;
     }
