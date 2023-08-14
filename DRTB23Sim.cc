@@ -2,7 +2,7 @@
 // \file DRTB23Sim.cc
 // \brief: main() of DRTB23Sim project
 // \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
-// @lopezzot
+//          @lopezzot
 // \start date: 9 June 2023
 //**************************************************
 
@@ -10,7 +10,7 @@
 //
 #include "DRTB23SimDetectorConstruction.hh"
 #include "DRTB23SimActionInitialization.hh"
-#include "DRTB23SimPhysicsList.hh"
+#include "DRTB23SimOpticalPhysics.hh"
 
 // Includers from Geant4
 //
@@ -21,10 +21,9 @@
 #endif
 #include "G4UImanager.hh"
 #include "G4UIcommand.hh"
-#include "FTFP_BERT.hh"
-#include "Randomize.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
+#include "G4PhysListFactory.hh"
 
 // G4err output for usage error
 //
@@ -36,7 +35,15 @@ namespace PrintUsageError {
     }
 }
 
-// main() function
+// G4err output for PhysListFactory usage error
+//
+namespace PrintPLFactoryUsageError {
+void PLFactoryUsageError() {
+  G4cerr << "Wrong PLFactory usage: no name for selected PL. " << G4endl;
+}
+} // namespace PrintPLFactoryUsageError
+
+// main() function entry point
 //
 int main(int argc, char** argv) {
  
@@ -91,13 +98,25 @@ int main(int argc, char** argv) {
 
     // Set mandatory initialization classes
     //
-    auto DetConstruction = new DRTB23SimDetectorConstruction();
+    auto DetConstruction = new DRTB23SimDetectorConstruction(); //Geometry
     runManager->SetUserInitialization(DetConstruction);
-
-    runManager->SetUserInitialization(new DRTB23SimPhysicsList(custom_pl ));
-  
+    
+    G4PhysListFactory PLFactory{}; //Physics List
+    if (!PLFactory.IsReferencePhysList(custom_pl)) { // if custom_pl is not a PLname exit
+        PrintPLFactoryUsageError::PLFactoryUsageError();
+        return 1;
+    }
+    auto PhysicsList = PLFactory.GetReferencePhysList(custom_pl);
+    //Register optical physics 
+    //Turn on and off the absorption of optical photons in materials
+    // 
+    G4bool AbsorptionOn = true;
+    auto OpPhysics = new DRTB23SimOpticalPhysics(AbsorptionOn);
+    PhysicsList->RegisterPhysics( OpPhysics );
+    runManager->SetUserInitialization(PhysicsList);
+ 
     auto actionInitialization = new DRTB23SimActionInitialization( DetConstruction );
-    runManager->SetUserInitialization(actionInitialization);
+    runManager->SetUserInitialization(actionInitialization); //Actions
   
     // Initialize visualization
     //
