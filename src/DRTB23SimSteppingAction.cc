@@ -94,16 +94,6 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
          volume->GetName() != "Preshower_scin" &&
          volume->GetName() != "Preshower_pb" ) { fEventAction->Addenergy(edep); }
    
-    if ( step->GetTrack()->GetTrackID() == 1 &&
-        step->GetTrack()->GetCurrentStepNumber() == 1){
-        //Save primary particle energy and name
-        //
-        fEventAction->SavePrimaryPDGID(step->GetTrack()->GetDefinition()->GetPDGEncoding());
-        fEventAction->SavePrimaryEnergy(step->GetTrack()->GetVertexKineticEnergy());
-        fEventAction->SavePrimaryXY(step->GetTrack()->GetPosition().x(),
-                                    step->GetTrack()->GetPosition().y());
-
-    }
 }
 
 //Define FastSteppingAction() method

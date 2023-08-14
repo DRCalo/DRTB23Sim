@@ -36,8 +36,8 @@ DRTB23SimEventAction::DRTB23SimEventAction()
     EnergyTot(0.),
     PrimaryPDGID(0),
     PrimaryParticleEnergy(0.),
-    PrimaryX(0),
-    PrimaryY(0),
+    PrimaryX(0.),
+    PrimaryY(0.),
     EscapedEnergy(0.),
     PSEnergy(0.),
     PSSciEnergy(0.),
@@ -63,13 +63,12 @@ void DRTB23SimEventAction::BeginOfEventAction(const G4Event*) {
     NofCherDet = 0;
     NofScinDet = 0;
     EnergyTot = 0.;
-    PrimaryPDGID = 0;
-    PrimaryX = 0;
-    PrimaryY = 0;
-    PrimaryParticleEnergy = 0.;
     EscapedEnergy = 0.;
     PSEnergy = 0.;
     PSSciEnergy = 0.;
+    //Fields involving the primary particle
+    //should NOT be cleared here,
+    //they are updated by the GeneralParticleSource
 
     VectorSignals.clear();
     VectorSignalsCher.clear();

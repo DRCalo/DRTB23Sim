@@ -10,6 +10,7 @@
 //Includers from project files
 //
 #include "DRTB23SimPrimaryGeneratorAction.hh"
+#include "DRTB23SimEventAction.hh"
 
 //Includers from Geant4
 //
@@ -21,9 +22,10 @@
 
 //Constructor
 //
-DRTB23SimPrimaryGeneratorAction::DRTB23SimPrimaryGeneratorAction()
+DRTB23SimPrimaryGeneratorAction::DRTB23SimPrimaryGeneratorAction(DRTB23SimEventAction* evtAction)
  : G4VUserPrimaryGeneratorAction(),
-   fGeneralParticleSource( nullptr )
+   fGeneralParticleSource( nullptr ),
+   fEventAction(evtAction)
    /*fParticleGun( nullptr )*/ {
 
     //G4int nofParticles = 1;                           //for particle gun
@@ -55,6 +57,17 @@ void DRTB23SimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     
     fGeneralParticleSource->GeneratePrimaryVertex(anEvent);
     //fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4cout<<fGeneralParticleSource->GetParticleEnergy()<<G4endl;
+    G4cout<<fGeneralParticleSource->GetParticlePosition()<<G4endl;
+    G4cout<<fGeneralParticleSource->GetParticleDefinition()->GetPDGEncoding()<<G4endl;
+
+    //Save primary particle energy, PDGID and x-y position
+    //
+    fEventAction->SavePrimaryEnergy(fGeneralParticleSource->GetParticleEnergy());
+    fEventAction->SavePrimaryPDGID(fGeneralParticleSource->GetParticleDefinition()->GetPDGEncoding());
+    fEventAction->SavePrimaryXY(fGeneralParticleSource->GetParticlePosition().x(),
+                                fGeneralParticleSource->GetParticlePosition().y());
 
 }
 

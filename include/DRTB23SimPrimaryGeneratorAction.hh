@@ -17,16 +17,23 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 
+//Forwards declarations from Geant4
+//
 class G4GeneralParticleSource;
 //class G4ParticleGun; //in case user want to switch to G4ParticleGun
 class G4Event;
 
+//Forward declarations from project
+//
+class DRTB23SimEventAction;
+
 class DRTB23SimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
-    
+ 
     public:
         //Constructor()
         //
-        DRTB23SimPrimaryGeneratorAction();    
+        DRTB23SimPrimaryGeneratorAction(DRTB23SimEventAction* evtAction);    
+
         //De-constructor()
         //
         virtual ~DRTB23SimPrimaryGeneratorAction();
@@ -36,6 +43,7 @@ class DRTB23SimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     private:
         G4GeneralParticleSource* fGeneralParticleSource;
         //G4ParticleGun*  fParticleGun; // G4ParticleGun
+        DRTB23SimEventAction* fEventAction;
 
 };
 
