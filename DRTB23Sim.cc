@@ -33,14 +33,14 @@ namespace PrintUsageError {
     G4cerr << "->DRTB23Sim usage: " << G4endl;
     G4cerr << "DRTB23Sim [-m macro ] [-u UIsession] [-t nThreads] [-pl PhysicsList]" 
         << G4endl;
-    G4cerr << "          [-opt FullOptic] [-vert VerticalRotation]" << G4endl;
+    G4cerr << "          [-vert VerticalRotation]" << G4endl;
     }
 }
 
 // main() function
 //
 int main(int argc, char** argv) {
-    
+ 
     // Error in argument numbers
     //
     if ( argc > 11 ) {
@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
     G4String macro;
     G4String session;
     G4String custom_pl = "FTFP_BERT"; //default physics list
-    G4bool FullOptic = false;
     G4bool VertRot = false;
     #ifdef G4MULTITHREADED
     G4int nThreads = 0;
@@ -63,8 +62,6 @@ int main(int argc, char** argv) {
         if      ( G4String(argv[i]) == "-m" ) macro = argv[i+1];
         else if ( G4String(argv[i]) == "-u" ) session = argv[i+1];
         else if ( G4String(argv[i]) == "-pl") custom_pl = argv[i+1];
-        else if ( G4String(argv[i]) == "-opt") FullOptic =  
-                                            G4UIcommand::ConvertToBool(argv[i+1]);
         else if ( G4String(argv[i]) == "-vert") VertRot = 
                                             G4UIcommand::ConvertToBool(argv[i+1]); 
         #ifdef G4MULTITHREADED
@@ -78,15 +75,10 @@ int main(int argc, char** argv) {
         }
     } 
 
-    //Print if FullOptic option is on
-    //
-    if (FullOptic){ G4cout<<"DRTB23Sim-> Run with full optical description"<<G4endl; }
-
     //Print if VertRot option is on
     //
     if (VertRot){ G4cout<<"DRTB23Sim-> Run with vertical rotation of calorimeter"<<G4endl; }
 
-  
     // Detect interactive mode (if no macro provided) and define UI session
     //
     G4UIExecutive* ui = nullptr;
@@ -110,9 +102,9 @@ int main(int argc, char** argv) {
     auto DetConstruction = new DRTB23SimDetectorConstruction(VertRot);
     runManager->SetUserInitialization(DetConstruction);
 
-    runManager->SetUserInitialization(new DRTB23SimPhysicsList(custom_pl, FullOptic ));
+    runManager->SetUserInitialization(new DRTB23SimPhysicsList(custom_pl ));
   
-    auto actionInitialization = new DRTB23SimActionInitialization( DetConstruction, FullOptic );
+    auto actionInitialization = new DRTB23SimActionInitialization( DetConstruction );
     runManager->SetUserInitialization(actionInitialization);
   
     // Initialize visualization

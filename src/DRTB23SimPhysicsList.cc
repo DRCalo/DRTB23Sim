@@ -23,9 +23,8 @@
 
 //Define constructor
 //
-DRTB23SimPhysicsList::DRTB23SimPhysicsList(G4String physName, const G4bool FullOptic )
-    :G4VModularPhysicsList(),
-    fFullOptic( FullOptic ) {
+DRTB23SimPhysicsList::DRTB23SimPhysicsList(G4String physName)
+    :G4VModularPhysicsList() {
     
     //Define physics list factor and modular physics list
     //
@@ -60,7 +59,7 @@ DRTB23SimPhysicsList::DRTB23SimPhysicsList(G4String physName, const G4bool FullO
     // Turn on and off the absorption of optical photons in materials
     // 
     AbsorptionOn = true;
-    RegisterPhysics( OpPhysics = new DRTB23SimOpticalPhysics(fFullOptic, AbsorptionOn) );
+    RegisterPhysics( OpPhysics = new DRTB23SimOpticalPhysics(AbsorptionOn) );
     
 }
 
