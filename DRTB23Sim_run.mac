@@ -1,3 +1,10 @@
+# Select test-beam platform shift and rotation (with units)
+#
+/tbgeo/xshift 0.0 mm
+/tbgeo/yshift 0.0 mm
+/tbgeo/horizrot 0.0 deg
+/tbgeo/vertrot 0.0 deg
+#
 # Change the default number of workers (in multi-threading mode) 
 #/run/numberOfWorkers 4
 #
@@ -6,7 +13,7 @@
 #
 # Kinematics: 
 #
-#/run/printProgress 500
+/run/printProgress 10
 /gps/particle e-
 /gps/energy 0.5 GeV
 /gps/direction 0 0 1
@@ -15,6 +22,6 @@
 /gps/pos/radius 0.01 cm
 /random/setSeeds 1.2 2.5
 #
+# Run:
+#
 /run/beamOn 100
-
-

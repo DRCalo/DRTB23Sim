@@ -27,7 +27,7 @@ class DRTB23SimOpticalPhysics : public G4VPhysicsConstructor {
     public: 
         // Constructor
         //
-        DRTB23SimOpticalPhysics( const G4bool FullOptic, G4bool toggle=true);
+        DRTB23SimOpticalPhysics(G4bool toggle=true);
         // Deconstructor
         //
         virtual ~DRTB23SimOpticalPhysics();
@@ -56,9 +56,7 @@ class DRTB23SimOpticalPhysics : public G4VPhysicsConstructor {
         G4OpBoundaryProcess* theBoundaryProcess;
     
         G4bool AbsorptionOn;
-
-        G4bool fFullOptic;
-    
+ 
 };
 
 #endif

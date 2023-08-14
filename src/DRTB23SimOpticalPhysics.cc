@@ -18,9 +18,8 @@
 
 // Constructor
 //
-DRTB23SimOpticalPhysics::DRTB23SimOpticalPhysics(const G4bool FullOptic, G4bool toggle) 
-    : G4VPhysicsConstructor("Optical"),
-      fFullOptic( FullOptic ) {
+DRTB23SimOpticalPhysics::DRTB23SimOpticalPhysics(G4bool toggle) 
+    : G4VPhysicsConstructor("Optical") {
     
     // Initialize private members
     //
@@ -127,16 +126,13 @@ void DRTB23SimOpticalPhysics::ConstructProcess() {
             pManager->SetProcessOrdering(theCerenkovProcess,idxPostStep);
         }
         // Add Scintillation process to each candidate
-        // Adding Scintillation process only if fFullOptic == true
+        // (only for debugging)
         //
-        if(theScintProcess->IsApplicable(*particle)){
-            if (fFullOptic) {
-                pManager->AddProcess(theScintProcess);
-                pManager->SetProcessOrderingToLast(theScintProcess,idxAtRest);
-                pManager->SetProcessOrderingToLast(theScintProcess,idxPostStep);
-            }
-            else {}
-        } 
+        /*if(theScintProcess->IsApplicable(*particle)){
+            pManager->AddProcess(theScintProcess);
+            pManager->SetProcessOrderingToLast(theScintProcess,idxAtRest);
+            pManager->SetProcessOrderingToLast(theScintProcess,idxPostStep);
+        }*/
     }//end while
 }
 

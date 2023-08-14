@@ -29,15 +29,13 @@ class DRTB23SimActionInitialization : public G4VUserActionInitialization {
     public:
         //Constructor
         //
-        DRTB23SimActionInitialization(DRTB23SimDetectorConstruction*, const G4bool FullOptic );
+        DRTB23SimActionInitialization(DRTB23SimDetectorConstruction* );
         virtual ~DRTB23SimActionInitialization();
 
         virtual void BuildForMaster() const;
         virtual void Build() const;
 
     private:
-
-        G4bool fFullOptic;
 
 	DRTB23SimDetectorConstruction* fDetConstruction;
 

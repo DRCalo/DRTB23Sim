@@ -15,9 +15,8 @@
 
 //Constructor
 //
-DRTB23SimActionInitialization::DRTB23SimActionInitialization( DRTB23SimDetectorConstruction* detConstruction, const G4bool FullOptic )
+DRTB23SimActionInitialization::DRTB23SimActionInitialization( DRTB23SimDetectorConstruction* detConstruction )
     : G4VUserActionInitialization(),
-    fFullOptic( FullOptic ),
     fDetConstruction( detConstruction )		
 {}
 
@@ -42,7 +41,7 @@ void DRTB23SimActionInitialization::Build() const {
     auto eventAction = new DRTB23SimEventAction;
     SetUserAction(new DRTB23SimRunAction( eventAction ));
     SetUserAction(eventAction);
-    SetUserAction(new DRTB23SimSteppingAction(eventAction, fDetConstruction, fFullOptic));
+    SetUserAction(new DRTB23SimSteppingAction(eventAction, fDetConstruction));
 
 }  
 

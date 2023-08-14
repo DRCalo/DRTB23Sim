@@ -35,8 +35,7 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
         //Constructor
         //
         DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction,
-				const DRTB23SimDetectorConstruction* detConstruction,
-                                const G4bool FullOptic );
+				const DRTB23SimDetectorConstruction* detConstruction );
         //De-constructor
         //
         virtual ~DRTB23SimSteppingAction();
@@ -50,15 +49,9 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
         void AuxSteppingAction( const G4Step* step );
 
         //Fast signal simulation (no optical photon propagation)
-        //fFullOptic == false
         //
         void FastSteppingAction( const G4Step* step ); 
 
-        //Slow signal simulation (optical photon propagation)
-        //fFullOptic == true
-        //
-        void SlowSteppingAction( const G4Step* step );
-    
     private:
 
         DRTB23SimEventAction*  fEventAction;  
@@ -69,8 +62,6 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
 	//
         const DRTB23SimDetectorConstruction* fDetConstruction;
 				
-	G4bool fFullOptic;
-
         //Pointer to only existing implementation (singleton)
     	//of DRTB23SimTowerHelper
     	//

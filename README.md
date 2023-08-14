@@ -56,16 +56,22 @@ The project targets a standalone Geant4 simulation of the dual-readout electroma
    cmake -DGeant4_DIR=/absolute_path_to/geant4.10.07_p01-install/lib/Geant4-10.7.1/ relative_path_to/DRTB23Sim/
    make
    ```
-4. execute (example with DRTB23Sim_run.mac macro card, 2 thread, FTFP_BERT physics list, no optical propagation, and no vertical rotation of the calorimeter)
+4. execute (example with DRTB23Sim_run.mac macro card, 2 thread, FTFP_BERT physics list)
    ```sh
-   ./DRTB23Sim -m DRTB23Sim_run.mac -t 2 -pl FTFP_BERT -opt false -vert false
+   ./DRTB23Sim -m DRTB23Sim_run.mac -t 2 -pl FTFP_BERT
    ```
 Parser options
-   * -m macro.mac: pass a Geant4 macro card 
-   * -t integer: pass number of threads for multi-thread execution (example -t 3, default t 2)
-   * -pl Physics_List: select Geant4 physics list (example -pl FTFP_BERT)
-   * -opt FullOptic: boolean variable to switch on (true) the optical photon propagation in fibers (example -opt true, default false)
-   * -vert VertRot: boolean to switch on (true) vertical rotation of the calorimeter (example -vert true, default false)
+* -m macro.mac: pass a Geant4 macro card 
+* -t integer: pass number of threads for multi-thread execution (example -t 3, default t 2)
+* -pl Physics_List: select Geant4 physics list (example -pl FTFP_BERT)
+
+Note: the test-beam simulated platform can be shifted in x and y directions as in the actual configuration. The platform can also rotate around its center (the horizontal rotation). The housing containing the calorimeter can the lifted up from its back side creating a spin around its front face (the vertical rotation). By default, such parameters are set to zero. They are configurable via the UI macro card before the run is initialized as:
+   ```
+   /tbgeo/xshift <> [<Unit>]
+   /tbgeo/yshift <> [<Unit>]
+   /tbgeo/horizrot <> [<Unit>]
+   /tbgeo/vertrot <> [<Unit>]
+   ```
 
 ### Build, compile and execute on lxplus
 1. git clone the repo

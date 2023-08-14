@@ -23,7 +23,8 @@ class DRTB23SimPhysicsList : public G4VModularPhysicsList{
     public:
         //Constructor
         //
-        DRTB23SimPhysicsList(G4String, const G4bool FullOptic );
+        DRTB23SimPhysicsList(G4String);
+
         //De-constructor
         //
         virtual ~DRTB23SimPhysicsList();
@@ -31,11 +32,6 @@ class DRTB23SimPhysicsList : public G4VModularPhysicsList{
         DRTB23SimOpticalPhysics* OpPhysics;
     
         G4bool AbsorptionOn;
-    
-    private:
-        
-        G4bool fFullOptic;   
-
 };
 
 #endif
