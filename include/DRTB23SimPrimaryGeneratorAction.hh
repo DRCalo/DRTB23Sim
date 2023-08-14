@@ -1,7 +1,9 @@
 //**************************************************
 // \file DRTB23SimPrimaryGeneratorAction.hh
-// \brief: Definition of DRTB23SimPrimaryGeneratorAction class
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
+// \brief: Definition of 
+//         DRTB23SimPrimaryGeneratorAction class
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) 
+//          @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
@@ -16,7 +18,7 @@
 #include "globals.hh"
 
 class G4GeneralParticleSource;
-//class G4ParticleGun;         //you can switch to G4ParticleGun
+//class G4ParticleGun; //in case user want to switch to G4ParticleGun
 class G4Event;
 
 class DRTB23SimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
