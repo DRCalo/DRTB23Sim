@@ -55,17 +55,25 @@ DRTB23SimGeoMessenger::DRTB23SimGeoMessenger(DRTB23SimDetectorConstruction* DetC
     fMsgrDirectory->SetGuidance("Set movable parameters in test-beam geometry.");
 
     fXshiftcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/xshift", this);
+    fXshiftcmd->SetParameterName("xshift",/*omittable=*/false,/*currentAsDefault=*/true);
     fXshiftcmd->SetGuidance("Shift test-beam platform x direction (default unit mm)");
     fXshiftcmd->SetDefaultUnit("mm");
+    fXshiftcmd->SetDefaultValue(0.);
     fYshiftcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/yshift", this);
+    fYshiftcmd->SetParameterName("yshift",/*omittable=*/false,/*currentAsDefault=*/true);
     fYshiftcmd->SetGuidance("Shift test-beam platform y direction (default unit mm)");
     fYshiftcmd->SetDefaultUnit("mm");
+    fYshiftcmd->SetDefaultValue(0.);
     fOrzrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/horizrot", this);
+    fOrzrotcmd->SetParameterName("horizrot",/*omittable=*/false,/*currentAsDefault=*/true);
     fOrzrotcmd->SetGuidance("Rotate platform (default deg)");
     fOrzrotcmd->SetDefaultUnit("deg");
+    fOrzrotcmd->SetDefaultValue(0.);
     fVerrotcmd = new G4UIcmdWithADoubleAndUnit("/tbgeo/vertrot", this);
+    fVerrotcmd->SetParameterName("vertrot",/*omittable=*/false,/*currentAsDefault=*/true);
     fVerrotcmd->SetGuidance("Lift up calorimeter from back side (default deg)");
     fVerrotcmd->SetDefaultUnit("deg");
+    fVerrotcmd->SetDefaultValue(0.);
 }
 
 //Messenger destructor
