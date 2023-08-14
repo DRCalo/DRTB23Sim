@@ -1,7 +1,8 @@
 //**************************************************
 // \file DRTB23SimEventAction.hh
 // \brief: Definition of DRTB23SimEventAction class
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
+//          @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
@@ -25,6 +26,7 @@ class DRTB23SimEventAction : public G4UserEventAction {
         //Constructor
         //
         DRTB23SimEventAction();
+
         //De-constructor
         //
         virtual ~DRTB23SimEventAction();
@@ -75,11 +77,11 @@ class DRTB23SimEventAction : public G4UserEventAction {
         G4double  EnergyTot;  //Total energy deposited (does not count invisibile energy)
         G4int     PrimaryPDGID; //PDGID of primary particle
         G4double  PrimaryParticleEnergy; //Primary particle energy
-        G4double  PrimaryX; //Primary particle energy
-        G4double  PrimaryY; //Primary particle energy
+        G4double  PrimaryX; //Primary particle x position
+        G4double  PrimaryY; //Primary particle y position
         G4double  EscapedEnergy; //Energy deposited in leakage absorber
-	G4double  PSEnergy;
-	G4double  PSSciEnergy;
+	G4double  PSEnergy; //Energy in entire preshower
+	G4double  PSSciEnergy; //Energy in preshower scintillator
 
         //Vector of SiPMs filled with scintillating signals
     	//
@@ -112,7 +114,6 @@ inline void DRTB23SimEventAction::SavePrimaryXY(G4double x, G4double y){
     PrimaryX = x;
     PrimaryY = y;
 }
-
 
 inline void DRTB23SimEventAction::SavePrimaryEnergy(G4double primaryparticleenergy){
     PrimaryParticleEnergy = primaryparticleenergy;
@@ -153,9 +154,11 @@ inline void DRTB23SimEventAction::Addenergy(G4double de){
 inline void DRTB23SimEventAction::AddPSEnergy(G4double de){
     PSEnergy += de;
 }
+
 inline void DRTB23SimEventAction::AddPSSciEnergy(G4double de){
     PSSciEnergy += de;
 }
+
 #endif
 
 //**************************************************

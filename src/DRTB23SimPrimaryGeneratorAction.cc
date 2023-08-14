@@ -1,33 +1,31 @@
 //**************************************************
 // \file DRTB23SimPrimaryGeneratorAction.cc
-// \brief: Implementation of DRTB23SimPrimaryGeneratorAction class
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
+// \brief: Implementation of 
+//         DRTB23SimPrimaryGeneratorAction class
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim)
+//          @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
 //Includers from project files
 //
 #include "DRTB23SimPrimaryGeneratorAction.hh"
+#include "DRTB23SimEventAction.hh"
 
 //Includers from Geant4
 //
-#include "G4RunManager.hh"
-#include "G4LogicalVolumeStore.hh"
-#include "G4LogicalVolume.hh"
-#include "G4Box.hh"
 #include "G4Event.hh"
-#include "G4ParticleGun.hh"
-#include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
-#include "Randomize.hh"
+#include "G4GeneralParticleSource.hh"
 
 //Constructor
 //
-DRTB23SimPrimaryGeneratorAction::DRTB23SimPrimaryGeneratorAction()
+DRTB23SimPrimaryGeneratorAction::DRTB23SimPrimaryGeneratorAction(DRTB23SimEventAction* evtAction)
  : G4VUserPrimaryGeneratorAction(),
-   fGeneralParticleSource( nullptr )
+   fGeneralParticleSource( nullptr ),
+   fEventAction(evtAction)
    /*fParticleGun( nullptr )*/ {
 
     //G4int nofParticles = 1;                           //for particle gun
@@ -59,6 +57,13 @@ void DRTB23SimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     
     fGeneralParticleSource->GeneratePrimaryVertex(anEvent);
     //fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    //Save primary particle energy, PDGID and x-y position
+    //
+    fEventAction->SavePrimaryEnergy(fGeneralParticleSource->GetParticleEnergy());
+    fEventAction->SavePrimaryPDGID(fGeneralParticleSource->GetParticleDefinition()->GetPDGEncoding());
+    fEventAction->SavePrimaryXY(fGeneralParticleSource->GetParticlePosition().x(),
+                                fGeneralParticleSource->GetParticlePosition().y());
 
 }
 

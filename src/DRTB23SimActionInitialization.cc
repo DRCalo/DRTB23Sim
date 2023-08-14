@@ -37,9 +37,9 @@ void DRTB23SimActionInitialization::BuildForMaster() const {
 //
 void DRTB23SimActionInitialization::Build() const {
   
-    SetUserAction(new DRTB23SimPrimaryGeneratorAction);
     auto eventAction = new DRTB23SimEventAction;
     SetUserAction(new DRTB23SimRunAction( eventAction ));
+    SetUserAction(new DRTB23SimPrimaryGeneratorAction(eventAction) );
     SetUserAction(eventAction);
     SetUserAction(new DRTB23SimSteppingAction(eventAction, fDetConstruction));
 
