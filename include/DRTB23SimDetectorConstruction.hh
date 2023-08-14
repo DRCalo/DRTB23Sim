@@ -35,7 +35,8 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
     public:
         //Constructor
         //
-        DRTB23SimDetectorConstruction(const G4bool VerRot);
+        DRTB23SimDetectorConstruction();
+
         //De-constructor
         //
         virtual ~DRTB23SimDetectorConstruction();
@@ -105,8 +106,6 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
 				
 	G4VPhysicalVolume* fLeakCntPV; //PV: lekage counter
 	G4VPhysicalVolume* fWorldPV;   //PV: wourld volume
-
-        G4bool fVertRot;  
 
         //Pointer to messenger for UI
         //

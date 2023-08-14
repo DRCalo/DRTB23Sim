@@ -112,12 +112,11 @@ const G4double sq3m1=sq3/3.;
 
 //Constructor
 //
-DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction(const G4bool VertRot)
+DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction()
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
     fLeakCntPV(nullptr),
-    fWorldPV(nullptr),
-    fVertRot(VertRot){
+    fWorldPV(nullptr){
 
     fGeoMessenger = new DRTB23SimGeoMessenger(this);
 }
@@ -762,7 +761,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //G4RotationMatrix fullbox_rotmat = rot_vol_rotmat.inverse();
     G4RotationMatrix fullbox_rotmat = G4RotationMatrix();
     // Vertical rotation of module
-    //double vert_rot = fVertRot ? -2.5*deg : 0.0*deg; //to be removed
     double vert_rot = -fVerrot; //set via G4UIMessenger, default=0.
                                 //- sign needed to rotate as
                                 //done at the test-beam.

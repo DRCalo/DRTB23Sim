@@ -33,7 +33,6 @@ namespace PrintUsageError {
     G4cerr << "->DRTB23Sim usage: " << G4endl;
     G4cerr << "DRTB23Sim [-m macro ] [-u UIsession] [-t nThreads] [-pl PhysicsList]" 
         << G4endl;
-    G4cerr << "          [-vert VerticalRotation]" << G4endl;
     }
 }
 
@@ -53,7 +52,6 @@ int main(int argc, char** argv) {
     G4String macro;
     G4String session;
     G4String custom_pl = "FTFP_BERT"; //default physics list
-    G4bool VertRot = false;
     #ifdef G4MULTITHREADED
     G4int nThreads = 0;
     #endif
@@ -62,8 +60,6 @@ int main(int argc, char** argv) {
         if      ( G4String(argv[i]) == "-m" ) macro = argv[i+1];
         else if ( G4String(argv[i]) == "-u" ) session = argv[i+1];
         else if ( G4String(argv[i]) == "-pl") custom_pl = argv[i+1];
-        else if ( G4String(argv[i]) == "-vert") VertRot = 
-                                            G4UIcommand::ConvertToBool(argv[i+1]); 
         #ifdef G4MULTITHREADED
         else if ( G4String(argv[i]) == "-t" ) {
             nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -74,10 +70,6 @@ int main(int argc, char** argv) {
         return 1;
         }
     } 
-
-    //Print if VertRot option is on
-    //
-    if (VertRot){ G4cout<<"DRTB23Sim-> Run with vertical rotation of calorimeter"<<G4endl; }
 
     // Detect interactive mode (if no macro provided) and define UI session
     //
@@ -99,7 +91,7 @@ int main(int argc, char** argv) {
 
     // Set mandatory initialization classes
     //
-    auto DetConstruction = new DRTB23SimDetectorConstruction(VertRot);
+    auto DetConstruction = new DRTB23SimDetectorConstruction();
     runManager->SetUserInitialization(DetConstruction);
 
     runManager->SetUserInitialization(new DRTB23SimPhysicsList(custom_pl ));
