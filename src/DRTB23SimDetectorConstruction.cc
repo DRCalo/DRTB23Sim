@@ -641,20 +641,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
         };
     }; 
  
-    // Calorimeter placement (with rotation wrt beam axis)
-    //
-    G4RotationMatrix rotm  = G4RotationMatrix();
-    G4double xrot=2.5*deg;
-    G4double yrot=2.5*deg;
-    rotm.rotateX(xrot);  
-    rotm.rotateY(yrot);
-    G4ThreeVector position;
-    G4double ycomp=-1090*mm*sin(xrot);
-    G4double xcomp=1090*mm*sin(yrot);
-    position.setX(xcomp);
-    position.setY(ycomp);
-    position.setZ(0.);
-    G4Transform3D transform = G4Transform3D(rotm,position); 
 
     /***********************************************************
     * Volumes for the iron platform the prototype is placed on *
@@ -850,7 +836,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     ***************/
 
     G4RotationMatrix calo_rotmat = G4RotationMatrix();
-    double fullbox_floor = housing_half_height - bot_wall_thickness;
     double calo_shift_y = -(subtract_box_half_height - caloY);
     double calo_shift_z = -(housing_half_length - caloZ - plastic_cover_full_length);
     G4ThreeVector calo_pos = G4ThreeVector(0, calo_shift_y, calo_shift_z);
