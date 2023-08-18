@@ -1,6 +1,9 @@
 //Namespace for test-beam geometry constants
 //
 
+#ifndef DRTB23SimGeoPar_h
+#define DRTB23SimGeoPar_h
+
 //Includers from Geant4
 //
 #include "G4SystemOfUnits.hh"
@@ -60,3 +63,5 @@ namespace {
     constexpr G4double cutout_thickness = 4.5*mm;
 
 }
+
+#endif // DRTB23SimGeoPar_h
