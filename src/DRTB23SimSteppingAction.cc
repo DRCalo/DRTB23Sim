@@ -61,15 +61,12 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
     //--------------------------------------------------
     //Store auxiliary information from event steps
     //--------------------------------------------------
-
-    if ( volume == fDetConstruction->GetLeakCntPV() ){
-        //Take care operator== works with pointers only
-	//if there is a single placement of the volume
-	//use names or cpNo if not the case
-	//
+    
+    // Collect out of world leakage
+    //
+    if (!step->GetTrack()->GetNextVolume()) {
         fEventAction->AddEscapedEnergy(step->GetTrack()->GetKineticEnergy());
-        step->GetTrack()->SetTrackStatus(fStopAndKill);
-    } 
+    }
 
     if ( volume->GetName() == "Clad_S_fiber" ||
          volume->GetName() == "Core_S_fiber" ||
@@ -90,7 +87,6 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
 
     
     if ( volume != fDetConstruction->GetWorldPV() &&
-         volume != fDetConstruction->GetLeakCntPV() &&
          volume->GetName() != "Preshower_scin" &&
          volume->GetName() != "Preshower_pb" ) { fEventAction->Addenergy(edep); }
    

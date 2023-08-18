@@ -123,7 +123,6 @@ const G4double sq3m1=sq3/3.;
 DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction()
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
-    fLeakCntPV(nullptr),
     fWorldPV(nullptr){
 
     fGeoMessenger = new DRTB23SimGeoMessenger(this);
@@ -534,25 +533,6 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     PSScinVisAtt->SetVisibility(true);
     PSScinLV->SetVisAttributes( PSScinVisAtt );
  
-    //Absorber to calculate leakage
-    //
-    G4VSolid* leakageabsorber = new G4Sphere("leakageabsorber",                        
-        7.*m, 7.1*m, 0.*deg, 360.*deg, 0.*deg, 180.*deg); 
-    
-    G4LogicalVolume* leakageabsorberLV = new G4LogicalVolume(leakageabsorber,
-                                                             defaultMaterial,  
-                                                             "leakageabsorber");        
-    
-    leakageabsorberLV->SetVisAttributes(G4VisAttributes::Invisible);   
-
-    fLeakCntPV = new G4PVPlacement( 0, G4ThreeVector(),
-				    leakageabsorberLV,         
-                                    "leakageabsorber",
-                                    worldLV,               
-                                    false,          
-                                    0,               
-                                    fCheckOverlaps);
-
    // Module equipped
    //
    // Basic module structure: extrusion of an hexcell shape

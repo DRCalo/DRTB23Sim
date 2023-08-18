@@ -69,7 +69,6 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
                                             G4Material* CladCherMaterial);
         //Getters
     	//
-	const G4VPhysicalVolume* GetLeakCntPV() const;
     	const G4VPhysicalVolume* GetWorldPV() const;
         G4double GetXshift() const {return fXshift;};
         G4double GetYshift() const {return fYshift;};
@@ -104,8 +103,7 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
 	//
         G4bool  fCheckOverlaps; // option for checking volumes overlaps
 				
-	G4VPhysicalVolume* fLeakCntPV; //PV: lekage counter
-	G4VPhysicalVolume* fWorldPV;   //PV: wourld volume
+	G4VPhysicalVolume* fWorldPV; //PV: wourld volume
 
         //Pointer to messenger for UI
         //
@@ -136,10 +134,6 @@ inline G4int DRTB23SimDetectorConstruction::GetSiPMTower( const G4int& town ) co
       if(town==SiPMMod[i])SiPMTower=i;
     }
     return SiPMTower;		
-}
-
-inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetLeakCntPV() const {
-    return fLeakCntPV;
 }
 
 inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
