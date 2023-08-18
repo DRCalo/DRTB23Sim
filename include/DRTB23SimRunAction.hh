@@ -1,7 +1,8 @@
 //**************************************************
 // \file DRTB23SimRunAction.hh 
 // \brief: Definition of DRTB23SimRunAction class 
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
+// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) 
+//          @lopezzot
 // \start date: 7 July 2021
 //**************************************************
 
