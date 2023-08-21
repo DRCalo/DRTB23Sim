@@ -20,6 +20,7 @@
 #include "G4RunManager.hh"
 #include "G4OpBoundaryProcess.hh"
 #include "G4OpticalPhoton.hh"
+#include "G4RunManager.hh"
 
 //Define constructor
 //
@@ -42,9 +43,10 @@ DRTB23SimSteppingAction::~DRTB23SimSteppingAction() {}
 void DRTB23SimSteppingAction::UserSteppingAction( const G4Step* step ) {
     
     //Save auxiliary information
-    //
+    //(comment out AuxSteppingAction for fast execution)
     AuxSteppingAction( step );
 
+    //Save signals
     FastSteppingAction( step );
 }
 
@@ -52,15 +54,23 @@ void DRTB23SimSteppingAction::UserSteppingAction( const G4Step* step ) {
 //
 void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
 
+    //--------------------------------------------------
+    //Store auxiliary information from event steps
+    //--------------------------------------------------
+
+    //Get volumes of interest
+    //
+    const DRTB23SimDetectorConstruction* detector = 
+        static_cast<const DRTB23SimDetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    auto PSPV = detector->GetPSPV();
+    auto PSScinPV = detector->GetPSScinPV();
+    auto WorldPV = detector->GetWorldPV();
+
     // Get step info
     //
     G4VPhysicalVolume* volume 
         = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
     G4double edep = step->GetTotalEnergyDeposit();
-
-    //--------------------------------------------------
-    //Store auxiliary information from event steps
-    //--------------------------------------------------
     
     // Collect out of world leakage
     //
@@ -77,19 +87,18 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
         fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3)),
 				  edep );
     }
-    	
-    if ( volume->GetName() == "Preshower_scin" || volume->GetName() == "Preshower_pb" ){
+
+    //Collect energy in preshower (whole and scintillator)
+    if ( volume == PSPV || volume == PSScinPV ){
         fEventAction->AddPSEnergy( edep );
     }
-    if ( volume->GetName() == "Preshower_scin" ){
+    if ( volume == PSScinPV ){
         fEventAction->AddPSSciEnergy( edep );
     }
-
     
-    if ( volume != fDetConstruction->GetWorldPV() &&
-         volume->GetName() != "Preshower_scin" &&
-         volume->GetName() != "Preshower_pb" ) { fEventAction->Addenergy(edep); }
-   
+    //Collect energy in calo (N.B. not exact method as in 2023 the platform was included)
+    if ( volume != WorldPV && volume != PSPV && volume != PSScinPV ) { fEventAction->Addenergy(edep); }
+ 
 }
 
 //Define FastSteppingAction() method
