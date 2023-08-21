@@ -489,47 +489,34 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //
     auto PSSolid = new G4Box("Preshower", PSX/2., PSY/2., PSZ/2.);
 
-    auto PSLV = new G4LogicalVolume(PSSolid, defaultMaterial, "Preshower");
+    auto PSLV = new G4LogicalVolume(PSSolid, LeadMaterial, "Preshower");
 
-    new G4PVPlacement( 0, 
-		       G4ThreeVector(preshower_pos_x, preshower_pos_y, preshower_pos_z - PSZ/2.),
-		       PSLV,
-		       "Preshower",
-		       stage_logical,
-		       false,
-		       0,
-		       fCheckOverlaps);	 
-
-    auto PSLeadSolid = new G4Box("Preshower_pb", PSX/2., PSY/2., PSZ/4.);
-
-    auto PSLeadLV = new G4LogicalVolume(PSLeadSolid, LeadMaterial, "Preshower_pb");
-
-    new G4PVPlacement( 0, 
-		       G4ThreeVector(0.,0.,-PSZ/4.),
-		       PSLeadLV,
-		       "Preshower_pb",
-		       PSLV,
-		       false,
-		       0,
-		       fCheckOverlaps);	 
+    fPSPV = new G4PVPlacement( 0, 
+		               G4ThreeVector(preshower_pos_x, preshower_pos_y, preshower_pos_z - PSZ/2.),
+		               PSLV,
+		               "Preshower",
+		               stage_logical,
+		               false,
+		               0,
+		               fCheckOverlaps); 
 
     G4VisAttributes* PbVisAtt = new G4VisAttributes( G4Colour::Grey() );
     PbVisAtt->SetVisibility(true);
     PbVisAtt->SetForceSolid(true);
-    PSLeadLV->SetVisAttributes( PbVisAtt );
+    PSLV->SetVisAttributes( PbVisAtt );
 
     auto PSScinSolid = new G4Box("Preshower_scin", PSX/2., PSY/2., PSZ/4.);
 
     auto PSScinLV = new G4LogicalVolume(PSScinSolid, PSScinMaterial, "Preshower_scin");
 
-    new G4PVPlacement( 0, 
-		       G4ThreeVector(0.,0.,PSZ/4.),
-                       PSScinLV,
-	               "Preshower_scin",
-                       PSLV,
-                       false,	
-                       0,
-                       fCheckOverlaps);	 
+    fPSScinPV = new G4PVPlacement( 0, 
+		                   G4ThreeVector(0.,0.,PSZ/4.),
+                                   PSScinLV,
+	                           "Preshower_scin",
+                                   PSLV,
+                                   false,
+                                   0,
+                                   fCheckOverlaps); 
 
     G4VisAttributes* PSScinVisAtt = new G4VisAttributes( G4Colour::Cyan() );
     PSScinVisAtt->SetVisibility(true);
