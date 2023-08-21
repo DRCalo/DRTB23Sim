@@ -14,12 +14,18 @@
 //Includers from Geant4
 //
 #include "globals.hh"
+#include "G4Step.hh"
 
 class DRTB23SimSignalHelper {
 
     private:
 
         static DRTB23SimSignalHelper* instance;
+
+		const G4double fk_B = 0.126; //Birks constant
+
+		const G4double fSAttenuationLength = 191.6*CLHEP::cm; // from test beam data
+		const G4double fCAttenuationLength = 388.9*CLHEP::cm; // from test beam data
 
 	//Private constructor (singleton)
         //
@@ -35,6 +41,13 @@ class DRTB23SimSignalHelper {
 
     	G4int SmearCSignal( );
 
+		G4double GetDistanceToSiPM(const G4Step* step);
+
+		G4int AttenuateHelper(const G4int& signal, const G4double& distance, const G4double& attenuation_length);
+
+		G4int AttenuateSSignal(const G4int& signal, const G4double& distance);
+
+		G4int AttenuateCSignal(const G4int& signal, const G4double& distance);
 };
 
 #endif
