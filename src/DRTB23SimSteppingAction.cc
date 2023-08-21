@@ -131,11 +131,16 @@ void DRTB23SimSteppingAction::FastSteppingAction( const G4Step* step ) {
 //    G4VPhysicalVolume* modvolume 
 //        = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume(3);
 //	 std::cout << " grandmother name " << modvolume->GetName() << " number " << modvolume->GetCopyNo() << std::endl;
-//        std::cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << std::endl;			 
+//        std::cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << std::endl;
+
+    G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
+
 	TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));
 	SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
 	fEventAction->AddScin(edep);
 	signalhit = fSignalHelper->SmearSSignal( fSignalHelper->ApplyBirks( edep, steplength ) );
+    // Attenuate Signal
+    signalhit = fSignalHelper->AttenuateSSignal(signalhit, distance_to_sipm);
 //	if ( TowerID != 0 ) { fEventAction->AddVecSPMT( TowerID, signalhit ); }
 	fEventAction->AddVecSPMT( TowerID, signalhit ); 
 	if(SiPMTower > -1){ 
@@ -168,7 +173,10 @@ void DRTB23SimSteppingAction::FastSteppingAction( const G4Step* step ) {
 	    switch ( theStatus ){
 								
 	        case TotalInternalReflection: {
-		    G4int c_signal = fSignalHelper->SmearCSignal( );								
+            G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
+		    G4int c_signal = fSignalHelper->SmearCSignal( );
+            // Attenuate Signal
+            c_signal = fSignalHelper->AttenuateCSignal(c_signal, distance_to_sipm);								
 		    TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));		
 	            SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
 		    fEventAction->AddVecCPMT( TowerID, c_signal );
