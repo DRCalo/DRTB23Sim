@@ -502,7 +502,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
     G4VisAttributes* PbVisAtt = new G4VisAttributes( G4Colour::Grey() );
     PbVisAtt->SetVisibility(true);
-    PbVisAtt->SetForceSolid(true);
+    //PbVisAtt->SetForceSolid(true);
     PSLV->SetVisAttributes( PbVisAtt );
 
     auto PSScinSolid = new G4Box("Preshower_scin", PSX/2., PSY/2., PSZ/4.);
@@ -520,6 +520,7 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
     G4VisAttributes* PSScinVisAtt = new G4VisAttributes( G4Colour::Cyan() );
     PSScinVisAtt->SetVisibility(true);
+    PSScinVisAtt->SetForceSolid(true);
     PSScinLV->SetVisAttributes( PSScinVisAtt );
  
    // Module equipped
