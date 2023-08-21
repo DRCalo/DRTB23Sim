@@ -21,7 +21,7 @@
 /gps/pos/type Plane
 /gps/pos/shape Circle
 /gps/pos/radius 0.01 cm
-/random/setSeeds 1.2 2.5
+/random/setSeeds 12 25
 #
 # Run:
 #
