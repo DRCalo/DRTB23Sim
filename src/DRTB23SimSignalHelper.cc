@@ -18,7 +18,7 @@
 
 //Includers from C++
 //
-#include <random>
+// #include <random>
 
 DRTB23SimSignalHelper* DRTB23SimSignalHelper::instance = 0;
 
@@ -87,18 +87,11 @@ G4double DRTB23SimSignalHelper::GetDistanceToSiPM(const G4Step* step) {
 G4int DRTB23SimSignalHelper::AttenuateHelper(const G4int& signal, const G4double& distance, const G4double& attenuation_length) {
     double probability_of_survival = exp(-distance/attenuation_length);
 
-    // Seed the random number generator
-    std::random_device rd;
-    std::default_random_engine rng(rd());
-
-    // Define the distribution with the given probability x
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-
     G4int survived_photons = 0;
     for (int i=0; i<signal; i++)
     {
         // Simulate drawing between 0 and 1 with probability x of getting 1
-        if (dist(rng) <= probability_of_survival) survived_photons++;
+        if (G4UniformRand() <= probability_of_survival) survived_photons++;
     }
 
     return survived_photons;
