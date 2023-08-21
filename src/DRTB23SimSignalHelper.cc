@@ -39,8 +39,7 @@ DRTB23SimSignalHelper* DRTB23SimSignalHelper::Instance(){
 //
 G4double DRTB23SimSignalHelper::ApplyBirks( const G4double& de, const G4double& steplength ) {
 		
-    const G4double k_B = 0.126; //Birks constant
-    return (de/steplength) / ( 1+k_B*(de/steplength) ) * steplength;
+    return (de/steplength) / ( 1+fk_B*(de/steplength) ) * steplength;
 
 }
 
@@ -110,8 +109,7 @@ G4int DRTB23SimSignalHelper::AttenuateHelper(const G4int& signal, const G4double
 //
 G4int DRTB23SimSignalHelper::AttenuateSSignal(const G4int& signal, const G4double& distance) {
 
-    G4double attenuation_length = 191.6*CLHEP::cm; // from test beam data
-    return AttenuateHelper(signal, distance, attenuation_length);    
+    return AttenuateHelper(signal, distance, fSAttenuationLength);    
 
 }
 
@@ -119,8 +117,7 @@ G4int DRTB23SimSignalHelper::AttenuateSSignal(const G4int& signal, const G4doubl
 //
 G4int DRTB23SimSignalHelper::AttenuateCSignal(const G4int& signal, const G4double& distance) {
 
-    G4double attenuation_length = 388.9*CLHEP::cm; // from test beam data
-    return AttenuateHelper(signal, distance, attenuation_length);    
+    return AttenuateHelper(signal, distance, fCAttenuationLength);    
     
 }
 
