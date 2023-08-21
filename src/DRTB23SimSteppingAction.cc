@@ -28,10 +28,19 @@ DRTB23SimSteppingAction::DRTB23SimSteppingAction( DRTB23SimEventAction* eventAct
 						  const DRTB23SimDetectorConstruction* detConstruction )
     : G4UserSteppingAction(),
     fEventAction(eventAction),
-    fDetConstruction(detConstruction) {
-		
+    fDetConstruction(detConstruction),
+    fWorldPV(nullptr),
+    fPSPV(nullptr),
+    fPSScinPV(nullptr),
+    fSfiber_Abs_LV(nullptr),
+    fSfiber_Core_LV(nullptr),
+    fSfiber_Clad_LV(nullptr),
+    fCfiber_Abs_LV(nullptr),
+    fCfiber_Core_LV(nullptr),
+    fCfiber_Clad_LV(nullptr){
+	
         fSignalHelper = DRTB23SimSignalHelper::Instance(); 
-		
+	
 }
 
 //Define de-constructor
@@ -60,16 +69,25 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
 
     //Get volumes of interest
     //
-    const DRTB23SimDetectorConstruction* detector = 
-        static_cast<const DRTB23SimDetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    auto PSPV = detector->GetPSPV();
-    auto PSScinPV = detector->GetPSScinPV();
-    auto WorldPV = detector->GetWorldPV();
+    if(!fWorldPV){
+        const DRTB23SimDetectorConstruction* detector = 
+            static_cast<const DRTB23SimDetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        fWorldPV = detector->GetWorldPV();
+        fPSPV = detector->GetPSPV();
+        fPSScinPV = detector->GetPSScinPV();
+        fSfiber_Abs_LV = detector->GetSAbsLV();
+        fSfiber_Core_LV = detector->GetSCoreLV();
+        fSfiber_Clad_LV = detector->GetSCladLV();
+        fCfiber_Abs_LV = detector->GetCAbsLV();
+        fCfiber_Core_LV = detector->GetCCoreLV();
+        fCfiber_Clad_LV = detector->GetCCladLV();
+    }
 
     // Get step info
     //
     G4VPhysicalVolume* volume 
         = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+    G4LogicalVolume* Lvolume = volume->GetLogicalVolume();
     G4double edep = step->GetTotalEnergyDeposit();
     
     // Collect out of world leakage
@@ -78,26 +96,21 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
         fEventAction->AddEscapedEnergy(step->GetTrack()->GetKineticEnergy());
     }
 
-    if ( volume->GetName() == "Clad_S_fiber" ||
-         volume->GetName() == "Core_S_fiber" ||
-	 volume->GetName() == "Abs_Scin_fiber"  ||
-	 volume->GetName() == "Clad_C_fiber" ||
-	 volume->GetName() == "Core_C_fiber" ||
-         volume->GetName() == "Abs_Cher_fiber"  ) {
-        fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3)),
-				  edep );
+    if ( Lvolume== fSfiber_Clad_LV || Lvolume== fSfiber_Core_LV || Lvolume== fSfiber_Abs_LV  ||
+         Lvolume== fCfiber_Clad_LV || Lvolume== fCfiber_Core_LV || Lvolume== fCfiber_Abs_LV ) {
+        fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3)), edep );
     }
 
     //Collect energy in preshower (whole and scintillator)
-    if ( volume == PSPV || volume == PSScinPV ){
+    if ( volume == fPSPV || volume == fPSScinPV ){
         fEventAction->AddPSEnergy( edep );
     }
-    if ( volume == PSScinPV ){
+    if ( volume == fPSScinPV ){
         fEventAction->AddPSSciEnergy( edep );
     }
     
     //Collect energy in calo (N.B. not exact method as in 2023 the platform was included)
-    if ( volume != WorldPV && volume != PSPV && volume != PSScinPV ) { fEventAction->Addenergy(edep); }
+    if ( volume != fWorldPV && volume != fPSPV && volume != fPSScinPV ) { fEventAction->Addenergy(edep); }
  
 }
 

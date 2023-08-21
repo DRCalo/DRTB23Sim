@@ -125,7 +125,13 @@ DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction()
     fCheckOverlaps(false),
     fWorldPV(nullptr),
     fPSPV(nullptr),
-    fPSScinPV(nullptr){
+    fPSScinPV(nullptr),
+    fSfiber_Abs_LV(nullptr),
+    fSfiber_Core_LV(nullptr),
+    fSfiber_Clad_LV(nullptr),
+    fCfiber_Abs_LV(nullptr),
+    fCfiber_Core_LV(nullptr),
+    fCfiber_Clad_LV(nullptr){
 
     fGeoMessenger = new DRTB23SimGeoMessenger(this);
 }
@@ -848,6 +854,17 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
     //
     G4int copynumber = 0;
 
+    fSfiber_Abs_LV  = constructscinfiber(tuberadius,
+                                         fiberZ,
+                                         absorberMaterial,
+                                         coreradius,
+                                         coreZ,
+                                         ScinMaterial,
+                                         claddingradiusmin,
+                                         claddingradiusmax,
+                                         claddingZ,
+                                         CherMaterial);
+
     for(int column=0; column<NofFiberscolumn; column++){
         
         std::stringstream S_fiber_column;
@@ -874,21 +891,11 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                 vec_S_fiber.setZ(0.);
 
                 copynumber = ((NofFibersrow/2)*column+row/2);
-                auto logic_S_fiber = constructscinfiber(tuberadius,
-                                                        fiberZ,
-                                                        absorberMaterial,
-                                                        coreradius,
-                                                        coreZ,
-                                                        ScinMaterial,
-                                                        claddingradiusmin,
-                                                        claddingradiusmax,
-                                                        claddingZ,
-                                                        CherMaterial);
                 // Tubes with scintillating fiber placement
                 //
                 /*physi_S_fiber[column][row] =*/ new G4PVPlacement(0,
                                                                vec_S_fiber,
-                                                               logic_S_fiber,
+                                                               fSfiber_Abs_LV,
                                                                S_name,
                                                                moduleLV,
                                                                false,
@@ -897,9 +904,18 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
         };
     };
 
+    fCfiber_Abs_LV = constructcherfiber(tuberadius,
+                                        fiberZ,
+                                        absorberMaterial,
+                                        coreradius,
+                                        coreZ,
+                                        CherMaterial,
+                                        claddingradiusmin,
+                                        claddingradiusmax,
+                                        claddingZ,
+                                        CladCherMaterial);
     // Tubes with Cherenkov fibers
     //
-  
     for(int column=0; column<NofFiberscolumn; column++){
         
         std::stringstream C_fiber_column;
@@ -925,20 +941,11 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
                 vec_C_fiber.setZ(0.);
 
                 copynumber = ((NofFibersrow/2)*column+row/2);
-                        
-                auto logic_C_fiber = constructcherfiber(tuberadius,
-                                                        fiberZ,
-                                                        absorberMaterial,
-                                                        coreradius,
-                                                        coreZ,
-                                                        CherMaterial,
-                                                        claddingradiusmin,
-                                                        claddingradiusmax,
-                                                        claddingZ,
-                                                        CladCherMaterial);
+                // Tubes with scintillating fiber placement
+                //
                 /*physi_C_fiber[column][row] =*/ new G4PVPlacement(0,
                                                          vec_C_fiber,
-                                                         logic_C_fiber,
+                                                         fCfiber_Abs_LV,
                                                          C_name,
                                                          moduleLV,
                                                          false,
@@ -978,15 +985,13 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructscinfiber(G4double tube
     G4Tubs* Core_S_fiber = new G4Tubs("Core_S_fiber", 0., 
                                       coreradius, coreZ/2, 0., 2.*pi);
 
-    G4LogicalVolume* logic_Core_S_fiber = new G4LogicalVolume(Core_S_fiber,
-                                                              ScinMaterial,
-                                                              "Core_S_fiber");
+    fSfiber_Core_LV = new G4LogicalVolume(Core_S_fiber,ScinMaterial,"Core_S_fiber");
 
     G4VisAttributes* ScincoreVisAtt = new G4VisAttributes(G4Colour(0.0,0.0,0.8));
     ScincoreVisAtt->SetVisibility(true);
     ScincoreVisAtt->SetForceWireframe(true);
     ScincoreVisAtt->SetForceSolid(true);
-    logic_Core_S_fiber->SetVisAttributes(ScincoreVisAtt);
+    fSfiber_Core_LV->SetVisAttributes(ScincoreVisAtt);
     G4ThreeVector vec_Core_S;
     vec_Core_S.setX(0.);
     vec_Core_S.setY(0.);
@@ -994,7 +999,7 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructscinfiber(G4double tube
                              
     /*G4VPhysicalVolume* =*/ new G4PVPlacement(0,
                                                vec_Core_S,
-                                               logic_Core_S_fiber,
+                                               fSfiber_Core_LV,
                                                "Core_S_fiber",
                                                logic_S_fiber,
                                                false,
@@ -1004,15 +1009,13 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructscinfiber(G4double tube
     //Cladding
     G4Tubs* Clad_S_fiber = new G4Tubs("Clad_S_fiber", claddingradiusmin, claddingradiusmax, claddingZ/2, 0., 2.*pi);
 
-    G4LogicalVolume* logic_Clad_S_fiber = new G4LogicalVolume(Clad_S_fiber,
-                                                              CherMaterial,
-                                                              "Clad_S_fiber");
+    fSfiber_Clad_LV = new G4LogicalVolume(Clad_S_fiber,CherMaterial,"Clad_S_fiber");
 
     G4VisAttributes* ScincladVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
     ScincladVisAtt->SetVisibility(true);
     ScincladVisAtt->SetForceWireframe(true);
     ScincladVisAtt->SetForceSolid(true);
-    logic_Clad_S_fiber->SetVisAttributes(ScincladVisAtt);
+    fSfiber_Clad_LV->SetVisAttributes(ScincladVisAtt);
 
     G4ThreeVector vec_Clad_S;
     vec_Clad_S.setX(0.);
@@ -1021,7 +1024,7 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructscinfiber(G4double tube
                              
     /*G4VPhysicalVolume* =*/ new G4PVPlacement(0,
                                                vec_Clad_S,
-                                               logic_Clad_S_fiber,
+                                               fSfiber_Clad_LV,
                                                "Clad_S_fiber",
                                                logic_S_fiber,
                                                false,
@@ -1056,15 +1059,13 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructcherfiber(G4double tube
     //Core
     G4Tubs* Core_C_fiber = new G4Tubs("Core_C_fiber", 0., coreradius, coreZ/2, 0., 2.*pi);
 
-    G4LogicalVolume* logic_Core_C_fiber = new G4LogicalVolume(Core_C_fiber,
-                                                              CherMaterial,
-                                                              "Core_C_fiber");
+    fCfiber_Core_LV = new G4LogicalVolume(Core_C_fiber,CherMaterial,"Core_C_fiber");
 
     G4VisAttributes* ChercoreVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));
     ChercoreVisAtt->SetVisibility(true);
     ChercoreVisAtt->SetForceWireframe(true);
     ChercoreVisAtt->SetForceSolid(true);
-    logic_Core_C_fiber->SetVisAttributes(ChercoreVisAtt);
+    fCfiber_Core_LV->SetVisAttributes(ChercoreVisAtt);
     G4ThreeVector vec_Core_C;
     vec_Core_C.setX(0.);
     vec_Core_C.setY(0.);
@@ -1072,7 +1073,7 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructcherfiber(G4double tube
                              
     /*G4VPhysicalVolume* =*/ new G4PVPlacement(0,
                                                vec_Core_C,
-                                               logic_Core_C_fiber,
+                                               fCfiber_Core_LV,
                                                "Core_C_fiber",
                                                logic_C_fiber,
                                                false,
@@ -1082,15 +1083,13 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructcherfiber(G4double tube
     //Cladding
     G4Tubs* Clad_C_fiber = new G4Tubs("Clad_C_fiber", claddingradiusmin, claddingradiusmax, claddingZ/2, 0., 2.*pi);
 
-    G4LogicalVolume* logic_Clad_C_fiber = new G4LogicalVolume(Clad_C_fiber,
-                                                              CladCherMaterial,
-                                                              "Clad_C_fiber");
+    fCfiber_Clad_LV = new G4LogicalVolume(Clad_C_fiber,CladCherMaterial,"Clad_C_fiber");
 
     G4VisAttributes* ChercladVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
     ChercladVisAtt->SetVisibility(true);
     ChercladVisAtt->SetForceWireframe(true);
     ChercladVisAtt->SetForceSolid(true);
-    logic_Clad_C_fiber->SetVisAttributes(ChercladVisAtt);
+    fCfiber_Clad_LV->SetVisAttributes(ChercladVisAtt);
     G4ThreeVector vec_Clad_C;
     vec_Clad_C.setX(0.);
     vec_Clad_C.setY(0.);
@@ -1098,7 +1097,7 @@ G4LogicalVolume* DRTB23SimDetectorConstruction::constructcherfiber(G4double tube
                              
     /*G4VPhysicalVolume* =*/ new G4PVPlacement(0,
                                                vec_Clad_C,
-                                               logic_Clad_C_fiber,
+                                               fCfiber_Clad_LV,
                                                "Clad_C_fiber",
                                                logic_C_fiber,
                                                false,

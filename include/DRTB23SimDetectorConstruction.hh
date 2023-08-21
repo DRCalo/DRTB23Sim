@@ -67,9 +67,15 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
                                             G4Material* CladCherMaterial);
         //Getters
     	//
-    	const G4VPhysicalVolume* GetWorldPV() const;
-    	const G4VPhysicalVolume* GetPSPV() const;
-    	const G4VPhysicalVolume* GetPSScinPV() const;
+    	G4VPhysicalVolume* GetWorldPV() const;
+    	G4VPhysicalVolume* GetPSPV() const;
+    	G4VPhysicalVolume* GetPSScinPV() const;
+    	G4LogicalVolume* GetSAbsLV() const {return fSfiber_Abs_LV;};
+    	G4LogicalVolume* GetSCoreLV() const {return fSfiber_Core_LV;};
+    	G4LogicalVolume* GetSCladLV() const {return fSfiber_Clad_LV;};
+    	G4LogicalVolume* GetCAbsLV() const {return fCfiber_Abs_LV;};
+    	G4LogicalVolume* GetCCoreLV() const {return fCfiber_Core_LV;};
+    	G4LogicalVolume* GetCCladLV() const {return fCfiber_Clad_LV;};
         G4double GetXshift() const {return fXshift;};
         G4double GetYshift() const {return fYshift;};
         G4double GetOrzrot() const {return fOrzrot;};
@@ -106,6 +112,12 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
 	G4VPhysicalVolume* fWorldPV; //PV: world volume
         G4VPhysicalVolume* fPSPV; //PV: preshower volume
         G4VPhysicalVolume* fPSScinPV; //PV: preshower scintillator volume
+        G4LogicalVolume*   fSfiber_Abs_LV; //LV: Absorber of S fiber
+        G4LogicalVolume*   fSfiber_Core_LV; //LV: Core of S fiber
+        G4LogicalVolume*   fSfiber_Clad_LV; //LV: Cladding of S fiber
+        G4LogicalVolume*   fCfiber_Abs_LV; //LV: Absorber of C fiber
+        G4LogicalVolume*   fCfiber_Core_LV; //LV: Core of C fiber
+        G4LogicalVolume*   fCfiber_Clad_LV; //LV: Cladding of C fiber
 
         //Pointer to messenger for UI
         //
@@ -138,15 +150,15 @@ inline G4int DRTB23SimDetectorConstruction::GetSiPMTower( const G4int& town ) co
     return SiPMTower;		
 }
 
-inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
+inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
     return fWorldPV;
 }
 
-inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSPV() const {
+inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSPV() const {
     return fPSPV;
 }
 
-inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSScinPV() const {
+inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSScinPV() const {
     return fPSScinPV;
 }
 
