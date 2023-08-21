@@ -70,6 +70,8 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
         //Getters
     	//
     	const G4VPhysicalVolume* GetWorldPV() const;
+    	const G4VPhysicalVolume* GetPSPV() const;
+    	const G4VPhysicalVolume* GetPSScinPV() const;
         G4double GetXshift() const {return fXshift;};
         G4double GetYshift() const {return fYshift;};
         G4double GetOrzrot() const {return fOrzrot;};
@@ -103,7 +105,9 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
 	//
         G4bool  fCheckOverlaps; // option for checking volumes overlaps
 				
-	G4VPhysicalVolume* fWorldPV; //PV: wourld volume
+	G4VPhysicalVolume* fWorldPV; //PV: world volume
+        G4VPhysicalVolume* fPSPV; //PV: preshower volume
+        G4VPhysicalVolume* fPSScinPV; //PV: preshower scintillator volume
 
         //Pointer to messenger for UI
         //
@@ -138,6 +142,14 @@ inline G4int DRTB23SimDetectorConstruction::GetSiPMTower( const G4int& town ) co
 
 inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
     return fWorldPV;
+}
+
+inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSPV() const {
+    return fPSPV;
+}
+
+inline const G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSScinPV() const {
+    return fPSScinPV;
 }
 
 #endif

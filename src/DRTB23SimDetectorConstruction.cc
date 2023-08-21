@@ -123,7 +123,9 @@ const G4double sq3m1=sq3/3.;
 DRTB23SimDetectorConstruction::DRTB23SimDetectorConstruction()
     : G4VUserDetectorConstruction(),
     fCheckOverlaps(false),
-    fWorldPV(nullptr){
+    fWorldPV(nullptr),
+    fPSPV(nullptr),
+    fPSScinPV(nullptr){
 
     fGeoMessenger = new DRTB23SimGeoMessenger(this);
 }
