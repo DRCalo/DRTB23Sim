@@ -44,8 +44,7 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
     public:
         virtual G4VPhysicalVolume* Construct();
 
-        G4LogicalVolume* constructscinfiber(double tolerance,
-                                            G4double tuberadius,
+        G4LogicalVolume* constructscinfiber(G4double tuberadius,
                                             G4double fiberZ,
                                             G4Material* absorberMaterial,
                                             G4double coreradius,
@@ -56,8 +55,7 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
                                             G4double claddingZ,
                                             G4Material* CherMaterial);
     
-        G4LogicalVolume* constructcherfiber(double tolerance, 
-                                            G4double tuberadius,
+        G4LogicalVolume* constructcherfiber(G4double tuberadius,
                                             G4double fiberZ,
                                             G4Material* absorberMaterial,
                                             G4double coreradius,
