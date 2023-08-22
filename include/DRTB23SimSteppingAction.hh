@@ -35,8 +35,7 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
     public:
         //Constructor
         //
-        DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction,
-				const DRTB23SimDetectorConstruction* detConstruction );
+        DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction);
         //De-constructor
         //
         virtual ~DRTB23SimSteppingAction();
@@ -61,7 +60,6 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
                 
 	//Pointers
 	//
-        const DRTB23SimDetectorConstruction* fDetConstruction;
 	G4VPhysicalVolume* fWorldPV; //PV: world volume
         G4VPhysicalVolume* fPSPV; //PV: preshower volume
         G4VPhysicalVolume* fPSScinPV; //PV: preshower scintillator volume

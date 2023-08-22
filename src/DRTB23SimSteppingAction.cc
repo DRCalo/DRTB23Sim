@@ -24,11 +24,9 @@
 
 //Define constructor
 //
-DRTB23SimSteppingAction::DRTB23SimSteppingAction( DRTB23SimEventAction* eventAction,
-						  const DRTB23SimDetectorConstruction* detConstruction )
+DRTB23SimSteppingAction::DRTB23SimSteppingAction( DRTB23SimEventAction* eventAction )
     : G4UserSteppingAction(),
     fEventAction(eventAction),
-    fDetConstruction(detConstruction),
     fWorldPV(nullptr),
     fPSPV(nullptr),
     fPSScinPV(nullptr),
@@ -98,7 +96,10 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
 
     if ( Lvolume== fSfiber_Clad_LV || Lvolume== fSfiber_Core_LV || Lvolume== fSfiber_Abs_LV  ||
          Lvolume== fCfiber_Clad_LV || Lvolume== fCfiber_Core_LV || Lvolume== fCfiber_Abs_LV ) {
-        fEventAction->AddVecTowerE(fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3)), edep );
+        fEventAction->AddVecTowerE(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3), edep );
+        if (Lvolume==fSfiber_Core_LV) fEventAction->AddScin(edep);
+        else if (Lvolume==fCfiber_Core_LV) fEventAction->AddCher(edep);
+        else {}
     }
 
     //Collect energy in preshower (whole and scintillator)
@@ -108,68 +109,71 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
     if ( volume == fPSScinPV ){
         fEventAction->AddPSSciEnergy( edep );
     }
-    
+ 
 }
 
 //Define FastSteppingAction() method
 //
 void DRTB23SimSteppingAction::FastSteppingAction( const G4Step* step ) { 
 		
+    //-----------------------------------------------------
+    //Store signals from Scintillation and Cherenkov fibers
+    //-----------------------------------------------------
+
+    //Get volumes of interest, i.e. core of fibers
+    //
+    if(!fWorldPV){
+        const DRTB23SimDetectorConstruction* detector = 
+            static_cast<const DRTB23SimDetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        fSfiber_Core_LV = detector->GetSCoreLV();
+        fCfiber_Core_LV = detector->GetCCoreLV();
+    }
+
     // Get step info
     //
-    G4VPhysicalVolume* volume 
-        = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+    G4LogicalVolume* Lvolume 
+        = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
     G4double edep = step->GetTotalEnergyDeposit();
     G4double steplength = step->GetStepLength();
-    
-    //--------------------------------------------------
-    //Store information from Scintillation and Cherenkov
-    //signals
-    //--------------------------------------------------
-   
-    std::string Fiber;
-    std::string S_fiber = "S_fiber";
-    std::string C_fiber = "C_fiber";
-    Fiber = volume->GetName(); 
-    G4int TowerID;
-    G4int SiPMID = 900;
-    G4int SiPMTower;
-    G4int signalhit = 0;
 
-    if ( strstr( Fiber.c_str(), S_fiber.c_str() ) ) { //scintillating fiber/tube
+    //Return if the step is not in core of fibers
+    //
+    if( Lvolume != fSfiber_Core_LV && Lvolume != fCfiber_Core_LV) return;
+
+    else if (Lvolume == fSfiber_Core_LV){ //scintillating fiber
+ 
+        G4int signalhit = 0;
 
         if ( step->GetTrack()->GetParticleDefinition() == G4OpticalPhoton::Definition() ) {
             step->GetTrack()->SetTrackStatus( fStopAndKill ); 
-	}
-
-	if ( step->GetTrack()->GetDefinition()->GetPDGCharge() == 0 || step->GetStepLength() == 0. ) { return; } //not ionizing particle
-//    G4VPhysicalVolume* modvolume 
-//        = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume(3);
-//	 std::cout << " grandmother name " << modvolume->GetName() << " number " << modvolume->GetCopyNo() << std::endl;
-//        std::cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << std::endl;
-
-    G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
-
-	TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));
-	SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
-	fEventAction->AddScin(edep);
-	signalhit = fSignalHelper->SmearSSignal( fSignalHelper->ApplyBirks( edep, steplength ) );
-    // Attenuate Signal
-    signalhit = fSignalHelper->AttenuateSSignal(signalhit, distance_to_sipm);
-//	if ( TowerID != 0 ) { fEventAction->AddVecSPMT( TowerID, signalhit ); }
-	fEventAction->AddVecSPMT( TowerID, signalhit ); 
-	if(SiPMTower > -1){ 
-            SiPMID = fDetConstruction->GetSiPMID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));
-	    fEventAction->AddVectorScin( signalhit, SiPMTower*NoFibersTower+SiPMID ); 
+            return;
         }
-    }
 
-    if ( strstr( Fiber.c_str(), C_fiber.c_str() ) ) { //Cherenkov fiber/tube
+	if ( step->GetTrack()->GetDefinition()->GetPDGCharge() == 0 || step->GetStepLength() == 0. 
+             || edep == 0. ) { return; }
 
-        fEventAction->AddCher(edep);
+        //G4VPhysicalVolume* modvolume 
+        //    = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume(3);
+        //G4cout << " grandmother name " << modvolume->GetName() << " number " << modvolume->GetCopyNo() << G4endl;
+        //G4cout << " grandmother nunber " << step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3) << G4endl;
+
+        G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
+
+        G4int TowerID = step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3);
+	signalhit = fSignalHelper->SmearSSignal( fSignalHelper->ApplyBirks( edep, steplength ) );
+        // Attenuate Signal
+        signalhit = fSignalHelper->AttenuateSSignal(signalhit, distance_to_sipm);
+	fEventAction->AddVecSPMT( TowerID, signalhit ); 
+	if(TowerID == 0){ // in sipm-readout tower
+            G4int SiPMID = step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1);
+	    fEventAction->AddVectorScin( signalhit, SiPMID ); 
+        }
+    } // end of scintillating fiber
+
+    else if (Lvolume == fCfiber_Core_LV ) { //Cherenkov fiber
 
 	if ( step->GetTrack()->GetParticleDefinition() == G4OpticalPhoton::Definition() ){
-					
+	
 	    G4OpBoundaryProcessStatus theStatus = Undefined;
 
 	    G4ProcessManager* OpManager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
@@ -186,31 +190,30 @@ void DRTB23SimSteppingAction::FastSteppingAction( const G4Step* step ) {
 	    }
 
 	    switch ( theStatus ){
-								
+						
 	        case TotalInternalReflection: {
-            G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
+                    G4double distance_to_sipm = fSignalHelper->GetDistanceToSiPM(step);
 		    G4int c_signal = fSignalHelper->SmearCSignal( );
-            // Attenuate Signal
-            c_signal = fSignalHelper->AttenuateCSignal(c_signal, distance_to_sipm);								
-		    TowerID = fDetConstruction->GetTowerID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3));		
-	            SiPMTower=fDetConstruction->GetSiPMTower(TowerID);
+                    // Attenuate Signal
+                    c_signal = fSignalHelper->AttenuateCSignal(c_signal, distance_to_sipm);
+		    G4int TowerID = step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(3);		
 		    fEventAction->AddVecCPMT( TowerID, c_signal );
-//		    if ( TowerID != 0 ) { fEventAction->AddVecCPMT( TowerID, c_signal ); }
 
-		    if(SiPMTower > -1){ 
-		        SiPMID = fDetConstruction->GetSiPMID(step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1));
-			fEventAction->AddVectorCher(SiPMTower*NoFibersTower+SiPMID, c_signal);
+		    if(TowerID == 0){ // in sipm-readout tower
+		        G4int SiPMID = step->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber(1);
+			fEventAction->AddVectorCher(SiPMID, c_signal);
 	            }
 		    step->GetTrack()->SetTrackStatus( fStopAndKill );
 		}
-		default:
-		    step->GetTrack()->SetTrackStatus( fStopAndKill );
+		default: 
+                    /*step->GetTrack()->SetTrackStatus( fStopAndKill )*/;
 	    } //end of swich cases
-
         } //end of optical photon
-
+        else return;
     } //end of Cherenkov fiber
-   
+
+    else return;
+
 }
 
 //**************************************************

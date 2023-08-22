@@ -15,9 +15,8 @@
 
 //Constructor
 //
-DRTB23SimActionInitialization::DRTB23SimActionInitialization( DRTB23SimDetectorConstruction* detConstruction )
-    : G4VUserActionInitialization(),
-    fDetConstruction( detConstruction )		
+DRTB23SimActionInitialization::DRTB23SimActionInitialization()
+    : G4VUserActionInitialization()
 {}
 
 //De-constructor
@@ -41,7 +40,7 @@ void DRTB23SimActionInitialization::Build() const {
     SetUserAction(new DRTB23SimRunAction( eventAction ));
     SetUserAction(new DRTB23SimPrimaryGeneratorAction(eventAction) );
     SetUserAction(eventAction);
-    SetUserAction(new DRTB23SimSteppingAction(eventAction, fDetConstruction));
+    SetUserAction(new DRTB23SimSteppingAction(eventAction));
 
 }  
 
