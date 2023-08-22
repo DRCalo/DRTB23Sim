@@ -108,7 +108,7 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleDColumn(7, EscapedEnergy);
     analysisManager->FillNtupleDColumn(8, PSEnergy);
     analysisManager->FillNtupleDColumn(9, PSSciEnergy);
-    analysisManager->FillNtupleDColumn(10, PrimaryX);
+    analysisManager->FillNtupleDColumn(10,PrimaryX);
     analysisManager->FillNtupleDColumn(11,PrimaryY);
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled

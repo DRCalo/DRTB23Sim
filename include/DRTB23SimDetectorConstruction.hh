@@ -67,9 +67,9 @@ class DRTB23SimDetectorConstruction : public G4VUserDetectorConstruction {
                                             G4Material* CladCherMaterial);
         //Getters
     	//
-    	G4VPhysicalVolume* GetWorldPV() const;
-    	G4VPhysicalVolume* GetPSPV() const;
-    	G4VPhysicalVolume* GetPSScinPV() const;
+    	G4VPhysicalVolume* GetWorldPV() const {return fWorldPV;};
+    	G4VPhysicalVolume* GetPSPV() const {return fPSPV;};
+    	G4VPhysicalVolume* GetPSScinPV() const {return fPSScinPV;};
     	G4LogicalVolume* GetSAbsLV() const {return fSfiber_Abs_LV;};
     	G4LogicalVolume* GetSCoreLV() const {return fSfiber_Core_LV;};
     	G4LogicalVolume* GetSCladLV() const {return fSfiber_Clad_LV;};
@@ -148,18 +148,6 @@ inline G4int DRTB23SimDetectorConstruction::GetSiPMTower( const G4int& town ) co
       if(town==SiPMMod[i])SiPMTower=i;
     }
     return SiPMTower;		
-}
-
-inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetWorldPV() const {
-    return fWorldPV;
-}
-
-inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSPV() const {
-    return fPSPV;
-}
-
-inline G4VPhysicalVolume* DRTB23SimDetectorConstruction::GetPSScinPV() const {
-    return fPSScinPV;
 }
 
 #endif
