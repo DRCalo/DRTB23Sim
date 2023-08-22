@@ -115,6 +115,8 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleDColumn(9, PSSciEnergy);
     analysisManager->FillNtupleDColumn(10,PrimaryX);
     analysisManager->FillNtupleDColumn(11,PrimaryY);
+    analysisManager->FillNtupleDColumn(12,std::accumulate(VectorSignals.begin(),VectorSignals.end(),0.));
+    analysisManager->FillNtupleDColumn(13,std::accumulate(VectorSignalsCher.begin(),VectorSignalsCher.end(),0.));
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled
 
