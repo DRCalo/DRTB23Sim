@@ -23,7 +23,7 @@
 /gps/particle e-
 /gps/energy 0.5 GeV
 /gps/direction 0 0 1
-/gps/position 0 0 -55
+/gps/position 0 0 -200 cm
 /gps/pos/type Plane
 /gps/pos/shape Circle
 /gps/pos/radius 0.01 cm

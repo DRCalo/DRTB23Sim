@@ -414,9 +414,9 @@ G4VPhysicalVolume* DRTB23SimDetectorConstruction::DefineVolumes() {
 
     // Geometry parameters of the world, world is a G4Box
     //
-    G4double worldX = 200 * moduleX;
-    G4double worldY = 200 * moduleY;
-    G4double worldZ = 60 * moduleZ;
+    G4double worldX = 100 * moduleX;
+    G4double worldY = 30 * moduleY;
+    G4double worldZ = 5 * moduleZ;
 
     // Geometry parameters of the fiber
     //
