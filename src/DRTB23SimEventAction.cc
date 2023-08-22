@@ -89,12 +89,10 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
  
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-    //Add all p.e. in Scin and Cher fibers before calibration
+    //Add all p.e. in Scin and Cher fibers
     //
-    for (auto& n : VectorSignals) NofScinDet += n;
-    for (auto& n : VecSPMT) NofScinDet += n;
-    for (auto& n : VectorSignalsCher) NofCherDet += n;
-    for (auto& n : VecCPMT) NofCherDet += n;
+    NofScinDet = std::accumulate(VecSPMT.begin(),VecSPMT.end(),0);
+    NofCherDet = std::accumulate(VecCPMT.begin(),VecCPMT.end(),0);
 
     //Add to EnergyTot the energies in towers
     //
