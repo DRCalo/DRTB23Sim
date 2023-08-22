@@ -59,7 +59,7 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
 
         G4OpBoundaryProcess* fOpProcess;
                 
-	//Pointer to DRTB23SimDetectorConstruction
+	//Pointers
 	//
         const DRTB23SimDetectorConstruction* fDetConstruction;
 	G4VPhysicalVolume* fWorldPV; //PV: world volume

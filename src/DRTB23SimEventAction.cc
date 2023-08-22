@@ -24,6 +24,7 @@
 //
 #include <iomanip>
 #include <vector>
+#include <numeric>
 
 //Define constructor
 //
@@ -94,6 +95,10 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
     for (auto& n : VecSPMT) NofScinDet += n;
     for (auto& n : VectorSignalsCher) NofCherDet += n;
     for (auto& n : VecCPMT) NofCherDet += n;
+
+    //Add to EnergyTot the energies in towers
+    //
+    EnergyTot = std::accumulate(VecTowerE.begin(),VecTowerE.end(),0.);
 
     //Fill ntuple event by event
     //entries with vectors are automatically filled

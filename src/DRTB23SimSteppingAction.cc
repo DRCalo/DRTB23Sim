@@ -109,9 +109,6 @@ void DRTB23SimSteppingAction::AuxSteppingAction( const G4Step* step ) {
         fEventAction->AddPSSciEnergy( edep );
     }
     
-    //Collect energy in calo (N.B. not exact method as in 2023 the platform was included)
-    if ( volume != fWorldPV && volume != fPSPV && volume != fPSScinPV ) { fEventAction->Addenergy(edep); }
- 
 }
 
 //Define FastSteppingAction() method
