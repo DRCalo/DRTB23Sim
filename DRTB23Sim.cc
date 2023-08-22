@@ -110,8 +110,7 @@ int main(int argc, char** argv) {
     //Register optical physics 
     //Turn on and off the absorption of optical photons in materials
     // 
-    G4bool AbsorptionOn = true;
-    auto OpPhysics = new DRTB23SimOpticalPhysics(AbsorptionOn);
+    auto OpPhysics = new DRTB23SimOpticalPhysics;
     PhysicsList->RegisterPhysics( OpPhysics );
     runManager->SetUserInitialization(PhysicsList);
  
