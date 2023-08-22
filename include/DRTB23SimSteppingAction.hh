@@ -15,6 +15,7 @@
 //
 #include "G4UserSteppingAction.hh"
 #include "G4Types.hh"
+#include "G4LogicalVolume.hh"
 
 //Forward declarations from Geant4
 //
@@ -34,8 +35,7 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
     public:
         //Constructor
         //
-        DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction,
-				const DRTB23SimDetectorConstruction* detConstruction );
+        DRTB23SimSteppingAction(DRTB23SimEventAction* eventAction);
         //De-constructor
         //
         virtual ~DRTB23SimSteppingAction();
@@ -58,9 +58,17 @@ class DRTB23SimSteppingAction : public G4UserSteppingAction {
 
         G4OpBoundaryProcess* fOpProcess;
                 
-	//Pointer to DRTB23SimDetectorConstruction
+	//Pointers
 	//
-        const DRTB23SimDetectorConstruction* fDetConstruction;
+	G4VPhysicalVolume* fWorldPV; //PV: world volume
+        G4VPhysicalVolume* fPSPV; //PV: preshower volume
+        G4VPhysicalVolume* fPSScinPV; //PV: preshower scintillator volume
+        G4LogicalVolume*   fSfiber_Abs_LV; //LV: Absorber of S fiber
+        G4LogicalVolume*   fSfiber_Core_LV; //LV: Core of S fiber
+        G4LogicalVolume*   fSfiber_Clad_LV; //LV: Cladding of S fiber
+        G4LogicalVolume*   fCfiber_Abs_LV; //LV: Absorber of C fiber
+        G4LogicalVolume*   fCfiber_Core_LV; //LV: Core of C fiber
+        G4LogicalVolume*   fCfiber_Clad_LV; //LV: Cladding of C fiber
 				
         //Pointer to only existing implementation (singleton)
     	//of DRTB23SimTowerHelper

@@ -24,15 +24,11 @@ class DRTB23SimActionInitialization : public G4VUserActionInitialization {
     public:
         //Constructor
         //
-        DRTB23SimActionInitialization(DRTB23SimDetectorConstruction* );
+        DRTB23SimActionInitialization();
         virtual ~DRTB23SimActionInitialization();
 
         virtual void BuildForMaster() const;
         virtual void Build() const;
-
-    private:
-
-	DRTB23SimDetectorConstruction* fDetConstruction;
 
 };
 

@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     PhysicsList->RegisterPhysics( OpPhysics );
     runManager->SetUserInitialization(PhysicsList);
  
-    auto actionInitialization = new DRTB23SimActionInitialization( DetConstruction );
+    auto actionInitialization = new DRTB23SimActionInitialization;
     runManager->SetUserInitialization(actionInitialization); //Actions
   
     // Initialize visualization

@@ -36,7 +36,6 @@ class DRTB23SimEventAction : public G4UserEventAction {
     
         void AddScin(G4double de);//Add energy in scintillating fibers
         void AddCher(G4double de);//Add energy in Cherenkov fibers
-        void Addenergy(G4double de);//Add energy depositedin calo
         void SavePrimaryPDGID(G4int pdgid);
         void SavePrimaryXY(G4double x, G4double y);
         void SaveAbsorberMaterial(G4String AbsorberMaterialName);
@@ -145,10 +144,6 @@ inline void DRTB23SimEventAction::AddScin(G4double de){
 
 inline void DRTB23SimEventAction::AddCher(G4double de){
     EnergyCher += de;
-}
-
-inline void DRTB23SimEventAction::Addenergy(G4double de){
-    EnergyTot += de;
 }
 
 inline void DRTB23SimEventAction::AddPSEnergy(G4double de){

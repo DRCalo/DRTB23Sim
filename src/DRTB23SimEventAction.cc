@@ -24,6 +24,7 @@
 //
 #include <iomanip>
 #include <vector>
+#include <numeric>
 
 //Define constructor
 //
@@ -88,12 +89,14 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
  
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-    //Add all p.e. in Scin and Cher fibers before calibration
+    //Add all p.e. in Scin and Cher fibers
     //
-    for (auto& n : VectorSignals) NofScinDet += n;
-    for (auto& n : VecSPMT) NofScinDet += n;
-    for (auto& n : VectorSignalsCher) NofCherDet += n;
-    for (auto& n : VecCPMT) NofCherDet += n;
+    NofScinDet = std::accumulate(VecSPMT.begin(),VecSPMT.end(),0);
+    NofCherDet = std::accumulate(VecCPMT.begin(),VecCPMT.end(),0);
+
+    //Add to EnergyTot the energies in towers
+    //
+    EnergyTot = std::accumulate(VecTowerE.begin(),VecTowerE.end(),0.);
 
     //Fill ntuple event by event
     //entries with vectors are automatically filled
@@ -108,8 +111,10 @@ void DRTB23SimEventAction::EndOfEventAction(const G4Event* ) {
     analysisManager->FillNtupleDColumn(7, EscapedEnergy);
     analysisManager->FillNtupleDColumn(8, PSEnergy);
     analysisManager->FillNtupleDColumn(9, PSSciEnergy);
-    analysisManager->FillNtupleDColumn(10, PrimaryX);
+    analysisManager->FillNtupleDColumn(10,PrimaryX);
     analysisManager->FillNtupleDColumn(11,PrimaryY);
+    analysisManager->FillNtupleDColumn(12,std::accumulate(VectorSignals.begin(),VectorSignals.end(),0.));
+    analysisManager->FillNtupleDColumn(13,std::accumulate(VectorSignalsCher.begin(),VectorSignalsCher.end(),0.));
     analysisManager->AddNtupleRow();
     //Vector entries in ntuple are automatically filled
 

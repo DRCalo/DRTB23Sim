@@ -59,6 +59,8 @@ DRTB23SimRunAction::DRTB23SimRunAction( DRTB23SimEventAction* eventAction )
     analysisManager->CreateNtupleDColumn("PSSciEnergy");                    //9
     analysisManager->CreateNtupleDColumn("PrimaryX");                       //10
     analysisManager->CreateNtupleDColumn("PrimaryY");                       //11
+    analysisManager->CreateNtupleDColumn("NofSiPMScinDet");                 //12
+    analysisManager->CreateNtupleDColumn("NofSiPMCherDet");                 //13
     analysisManager->CreateNtupleDColumn("VectorSignals", fEventAction->GetVectorSignals());
     analysisManager->CreateNtupleDColumn("VectorSignalsCher", fEventAction->GetVectorSignalsCher());
     analysisManager->CreateNtupleDColumn("VecTowerE", fEventAction->GetVecTowerE());
