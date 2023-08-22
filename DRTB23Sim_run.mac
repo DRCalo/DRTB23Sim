@@ -8,7 +8,13 @@
 # Change the default number of workers (in multi-threading mode) 
 #/run/numberOfWorkers 4
 #
+# Do not show list of processes
+#
+/process/em/verbose 0
+/process/had/verbose 0
+#
 # Initialize kernel
+#
 /run/initialize
 #
 # Kinematics: 
