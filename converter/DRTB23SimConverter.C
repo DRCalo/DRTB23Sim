@@ -2,7 +2,7 @@
 // \file DRTB23SimConverter.C
 // \brief: converter from DRTB23Sim format to
 //         2023 test-beam format
-//\history: - First implementation by Giacomo
+// \history: - First implementation by Giacomo
 //          Polesello during 2023 July test-beam.
 //          - Adaptation by Lorenzo Pezzotti
 //          on 23 August 2023.
@@ -35,29 +35,22 @@ double const sq3 = sqrt(3.);
 struct SiPMCalibration
 {
     std::array<double, 1> PheGeVS, PheGeVC;
-    SiPMCalibration();
+    SiPMCalibration()
+    {
+      PheGeVS[0] = 262;
+      PheGeVC[0] = 44;
+    }
 };
-
-SiPMCalibration::SiPMCalibration()
-{
-  //    testdata
-  PheGeVS[0] = 262;
-  PheGeVC[0] = 44;
-  //
-}
 
 struct PMTCalibration
 {
     std::array<double, 1> PheGeVPS, PheGeVPC;
-    PMTCalibration();
+    PMTCalibration()
+    {
+      PheGeVPS[0] = 262;
+      PheGeVPC[0] = 44;
+    }
 };
-
-PMTCalibration::PMTCalibration()
-{
-  //    testdata
-  PheGeVPS[0] = 262;
-  PheGeVPC[0] = 44;
-}
 
 class EventOut
 {
@@ -165,7 +158,7 @@ void Event::calibratePMT(const PMTCalibration& pmtcalibration, EventOut* evout)
 
 ClassImp(EventOut)
 
-  void DRTB23SimConverter(const string run)
+void DRTB23SimConverter(const string run)
 {
   // Open merge ntuples
   //
