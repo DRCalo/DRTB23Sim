@@ -1,13 +1,14 @@
 //**************************************************
-// \file PhysicsConverter.C
-// \brief: converter from merged trees to Event obj
-// \author: Lorenzo Pezzotti (CERN EP-SFT-sim) @lopezzot
-//          Edoardo Proserpio (Uni Insubria)
-// \start date: 20 August 2021
+// \file DRTB23SimConverter.C
+// \brief: converter from DRTB23Sim format to
+//         2023 test-beam format
+//\history: - First implementation by Giacomo 
+//          Polesello during 2023 July test-beam.
+//          - Adaptation by Lorenzo Pezzotti
+//          on 23 August 2023.
 //**************************************************
 //
-////usage: root -l .x PhysicsConverter.C++
-//
+////usage: root .x 'DRTB23SimConverter.C("runNo")'
 //
 #include <TTree.h>
 #include <TFile.h>
@@ -155,7 +156,7 @@ void Event::calibratePMT(const PMTCalibration& pmtcalibration, EventOut* evout){
 
 ClassImp(EventOut)
 
-void PhysicsConverter(const string run){
+void DRTB23SimConverter(const string run){
 
   //Open merge ntuples
   //
