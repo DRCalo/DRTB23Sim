@@ -13,7 +13,6 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <stdint.h>
-
 #include <array>
 #include <cstring>
 #include <fstream>
@@ -37,8 +36,8 @@ struct SiPMCalibration
     std::array<double, 1> PheGeVS, PheGeVC;
     SiPMCalibration()
     {
-      PheGeVS[0] = 262;
-      PheGeVC[0] = 44;
+      PheGeVS[0] = 284.;
+      PheGeVC[0] = 68.6;
     }
 };
 
@@ -47,8 +46,8 @@ struct PMTCalibration
     std::array<double, 1> PheGeVPS, PheGeVPC;
     PMTCalibration()
     {
-      PheGeVPS[0] = 262;
-      PheGeVPC[0] = 44;
+      PheGeVPS[0] = 284.;
+      PheGeVPC[0] = 68.6;
     }
 };
 
