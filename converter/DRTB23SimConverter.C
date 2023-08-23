@@ -161,7 +161,7 @@ void DRTB23SimConverter(const string run)
 {
   // Open merge ntuples
   //
-  string infile = "DRTB23Sim_Run0.root";
+  string infile = "DRTB23Sim_Run"+run+".root";
   std::cout << "Using file: " << infile << std::endl;
   char cinfile[infile.size() + 1];
   strcpy(cinfile, infile.c_str());
